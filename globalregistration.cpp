@@ -22,15 +22,11 @@
 ****************************************************************************/
 
 #include "globalregistration.h"
-#include "gr/algorithms/match4pcsBase.h"
-#include "gr/algorithms/Functor4pcs.h"
-#include "gr/algorithms/FunctorSuper4pcs.h"
-#include "gr/algorithms/PointPairFilter.h"
-#include <QtScript>
-
-// Constructor usually performs only two simple tasks of filling the two lists
-//  - typeList: with all the possible id of the filtering actions
-//  - actionList with the corresponding actions. If you want to add icons to your filtering actions you can do here by construction the QActions accordingly
+#include <gr/algorithms/match4pcsBase.h>
+#include <gr/algorithms/Functor4pcs.h>
+#include <gr/algorithms/FunctorSuper4pcs.h>
+#include <gr/algorithms/PointPairFilter.h>
+//#include <QtScript>
 
 GlobalRegistrationPlugin::GlobalRegistrationPlugin()
 {
@@ -40,8 +36,6 @@ GlobalRegistrationPlugin::GlobalRegistrationPlugin()
       actionList << new QAction(filterName(tt), this);
 }
 
-// ST() must return the very short string describing each filtering action
-// (this string is used also to define the menu entry)
 QString GlobalRegistrationPlugin::filterName(FilterIDType filterId) const
 {
   switch(filterId) {
@@ -51,8 +45,6 @@ QString GlobalRegistrationPlugin::filterName(FilterIDType filterId) const
   return QString();
 }
 
-// Info() must return the longer string describing each filtering action
-// (this string is used in the About plugin dialog)
  QString GlobalRegistrationPlugin::filterInfo(FilterIDType filterId) const
 {
   switch(filterId) {
@@ -62,9 +54,6 @@ QString GlobalRegistrationPlugin::filterName(FilterIDType filterId) const
     return QString("Unknown Filter");
 }
 
-// The FilterClass describes in which generic class of filters it fits.
-// This choice affect the submenu in which each filter will be placed
-// More than a single class can be choosen.
 GlobalRegistrationPlugin::FilterClass GlobalRegistrationPlugin::getClass(QAction *a)
 {
   switch(ID(a))
@@ -75,13 +64,6 @@ GlobalRegistrationPlugin::FilterClass GlobalRegistrationPlugin::getClass(QAction
     return MeshFilterInterface::Generic;
 }
 
-// This function define the needed parameters for each filter. Return true if the filter has some parameters
-// it is called every time, so you can set the default value of parameters according to the mesh
-// For each parameter you need to define,
-// - the name of the parameter,
-// - the string shown in the dialog
-// - the default value
-// - a possibly long string describing the meaning of that parameter (shown as a popup help in the dialog)
 void GlobalRegistrationPlugin::initParameterSet(QAction *action,MeshDocument &md, RichParameterSet & parlst)
 {
 
@@ -117,7 +99,7 @@ struct RealTimeTransformVisitor {
 
         mesh->Tr.FromEigenMatrix(mat);
     }
-    constexpr bool needsGlobalTransformation() { return true; }
+	constexpr bool needsGlobalTransformation() const { return true; }
 };
 
 struct TransformVisitor {
@@ -129,13 +111,13 @@ struct TransformVisitor {
             Eigen::Ref<MatrixType> /*mat*/) const {
         plugin->Log("Found new configuration. LCP = %f", best_LCP);
     }
-    constexpr bool needsGlobalTransformation() { return false; }
+	constexpr bool needsGlobalTransformation() const { return false; }
 };
 
 // init Super4PCS point cloud internal structure
-auto fillPointSet = [] (const CMeshO& m, std::vector<gr::Point3D>& out) {
+auto fillPointSet = [] (const CMeshO& m, std::vector<gr::Point3D<CMeshO::ScalarType>>& out) {
     using gr::Point3D;
-    Point3D p;
+	Point3D<CMeshO::ScalarType> p;
     out.clear();
     out.reserve(m.vert.size());
 
@@ -153,7 +135,7 @@ float align ( CMeshO* refMesh, CMeshO* trgMesh,
               MatrixType & mat,
               typename MatcherType::TransformVisitor & v) {
 
-    using SamplerType   = gr::UniformDistSampler;
+	using SamplerType   = gr::UniformDistSampler<gr::Point3D<CMeshO::ScalarType>>;
     using OptionType    = typename MatcherType::OptionsType;
 
     OptionType opt;
@@ -164,7 +146,7 @@ float align ( CMeshO* refMesh, CMeshO* trgMesh,
     opt.max_color_distance    = par.getFloat("color_diff");
     opt.max_time_seconds      = par.getInt("max_time_seconds");
 
-    std::vector<gr::Point3D> set1, set2;
+	std::vector<gr::Point3D<CMeshO::ScalarType>> set1, set2;
     fillPointSet(*refMesh, set1);
     fillPointSet(*trgMesh, set2);
 
