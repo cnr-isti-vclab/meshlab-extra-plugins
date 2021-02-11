@@ -1,0 +1,3 @@
+[submodule "meshlab"]
+	path = meshlab
+	url = https://github.com/cnr-isti-vclab/meshlab
