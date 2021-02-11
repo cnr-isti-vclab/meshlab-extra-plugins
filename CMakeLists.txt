@@ -123,6 +123,7 @@ set(CMAKE_INSTALL_RPATH)
 ### Plugin subdirectories
 set (MESHLAB_PLUGINS
 	plugins/filter_globalregistration
+	plugins/filter_poisson
 )
 
 message(STATUS "\nConfiguring plugins")
