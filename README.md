@@ -1,8 +1,12 @@
 # MeshLab Extra Plugins
 
-This repository contains a set of extra plugins that will be regularly released along with MeshLab.
+![Linux](https://github.com/alemuntoni/meshlab-extra-plugins/workflows/Linux/badge.svg)
+![MacOS](https://github.com/alemuntoni/meshlab-extra-plugins/workflows/MacOS/badge.svg)
+![Windows](https://github.com/alemuntoni/meshlab-extra-plugins/workflows/Windows/badge.svg)
 
-Each plugin can be loaded in MeshLab, going to Help -> Plugin Info -> Load Plugins
+This repository contains a set of extra plugins that will be regularly released along with [MeshLab](https://github.com/cnr-isti-vclab/meshlab).
+
+Each plugin can be loaded in MeshLab, going to Help -> Plugin Info -> Load Plugins.
 
 Be sure to download the right package of plugins: check for your OS and if you are using MeshLab built with double precision (202x.yy**d** version).
 
