@@ -24,7 +24,7 @@ jobs:
     - name: Install Qt
       uses: jurplel/install-qt-action@v2
       with:
-        version: '5.12'
+        version: '5.12.3'
     - name: Install dependencies
       run: |
         brew install libomp
