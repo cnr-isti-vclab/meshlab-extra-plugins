@@ -25,6 +25,8 @@ jobs:
       uses: ilammy/msvc-dev-cmd@v1
     - name: Install Qt
       uses: jurplel/install-qt-action@v2
+      with:
+        version: '5.12'
     - name: Setup env variables
       id: envs
       shell: bash
