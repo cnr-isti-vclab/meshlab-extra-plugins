@@ -37,7 +37,6 @@ find_package(Eigen3)
 set(MESHLAB_BUILD_DISTRIB_DIR ${CMAKE_CURRENT_BINARY_DIR}/distrib)
 set(MESHLAB_LIB_OUTPUT_DIR ${MESHLAB_BUILD_DISTRIB_DIR})
 set(MESHLAB_PLUGIN_OUTPUT_DIR ${MESHLAB_BUILD_DISTRIB_DIR}/plugins)
-set(MESHLAB_SHADER_OUTPUT_DIR ${MESHLAB_BUILD_DISTRIB_DIR}/shaders)
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${MESHLAB_BUILD_DISTRIB_DIR})
 
 ### Build settings
@@ -72,19 +71,14 @@ else()
 endif()
 include(GNUInstallDirs)
 if(INSTALL_TO_UNIX_LAYOUT)
-	set(MESHLAB_BIN_INSTALL_DIR ${CMAKE_INSTALL_BINDIR})
 	set(MESHLAB_LIB_INSTALL_DIR ${CMAKE_INSTALL_LIBDIR}/meshlab)
 	set(MESHLAB_PLUGIN_INSTALL_DIR ${MESHLAB_LIB_INSTALL_DIR}/plugins)
 elseif(APPLE)
-	set(MESHLAB_BIN_INSTALL_DIR .)
 	set(MESHLAB_LIB_INSTALL_DIR meshlab.app/Contents/Frameworks)
 	set(MESHLAB_PLUGIN_INSTALL_DIR meshlab.app/Contents/PlugIns ${MESHLAB_PARENT_SCOPE})
-	set(MESHLAB_SHADER_INSTALL_DIR meshlab.app/Contents/shaders)
 else()
-	set(MESHLAB_BIN_INSTALL_DIR .)
 	set(MESHLAB_LIB_INSTALL_DIR .)
 	set(MESHLAB_PLUGIN_INSTALL_DIR plugins ${MESHLAB_PARENT_SCOPE})
-	set(MESHLAB_SHADER_INSTALL_DIR shaders)
 endif()
 
 ### Install Settings
@@ -113,7 +107,8 @@ endif()
 # External
 set(EXTERNAL_DIR ${MESHLAB_SRC_DIR}/external)
 include(${EXTERNAL_DIR}/external_common.cmake)
-add_subdirectory(${EXTERNAL_DIR})
+set(EXTRA_EXTERNAL_DIR ${CMAKE_CURRENT_SOURCE_DIR}/external)
+add_subdirectory(${EXTRA_EXTERNAL_DIR})
 
 # Start automoc/autouic/autorcc
 set(CMAKE_AUTOMOC ON)
@@ -130,7 +125,6 @@ set (MESHLAB_PLUGINS
 	plugins/filter_globalregistration
 )
 
-
 message(STATUS "\nConfiguring plugins")
 foreach(PLUGIN ${MESHLAB_PLUGINS})
 	if(EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/${PLUGIN}/CMakeLists.txt)
@@ -140,9 +134,3 @@ foreach(PLUGIN ${MESHLAB_PLUGINS})
 		message(STATUS " - ${PLUGIN} - Skipping, plugin or build system not found.")
 	endif()
 endforeach()
-
-
-### Copy/install other files
-
-# This variable keeps track of the output filenames that need to be copied at build time
-set(COPIED_FILES)

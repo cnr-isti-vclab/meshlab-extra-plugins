@@ -1,3 +1,6 @@
 [submodule "meshlab"]
 	path = meshlab
 	url = https://github.com/cnr-isti-vclab/meshlab
+[submodule "external/OpenGR"]
+	path = external/OpenGR
+	url = https://github.com/STORM-IRIT/OpenGR
