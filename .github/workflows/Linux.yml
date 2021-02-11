@@ -30,7 +30,7 @@ jobs:
           echo  ::set-output name=doption::"-DBUILD_WITH_DOUBLE_SCALAR=ON"
           echo  ::set-output name=artifact_suffix::"_double"
         else
-          echo  ::set-output name=doption::"
+          echo  ::set-output name=doption::""
           echo  ::set-output name=artifact_suffix::""
         fi
     - name: Configure and Build
