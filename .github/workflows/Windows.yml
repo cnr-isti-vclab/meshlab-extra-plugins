@@ -1,12 +1,12 @@
-name: Linux
+name: Windows
 
 on:
   [push, pull_request]
 
 jobs:
-  linux_build:
-    name: Build MeshLab Extra Plugins (Linux)
-    runs-on: ubuntu-16.04 #in order to deploy, need to use oldest supported version
+  windows_build:
+    name: Build MeshLab Extra Plugins (Windows)
+    runs-on: windows-latest
     strategy:
       matrix:
         precision: [single_precision, double_precision]
@@ -21,13 +21,16 @@ jobs:
         auth_header="$(git config --local --get http.https://github.com/.extraheader)"
         git submodule sync --recursive
         git -c "http.extraheader=$auth_header" -c protocol.version=2 submodule update --init --force --recursive --depth=1
+    - name: Download Jom
+      run: |
+        Invoke-WebRequest -Uri "http://mirrors.ukfast.co.uk/sites/qt.io/official_releases/jom/jom_1_1_3.zip" -OutFile "jom_1_1_3.zip"
+        New-Item -Name "jom" -ItemType "directory"
+        Expand-Archive -Path jom_1_1_3.zip -DestinationPath .\jom
+        echo "$(Get-Location)\jom" >> GITHUB_PATH
+    - name: Setup MSVC
+      uses: ilammy/msvc-dev-cmd@v1
     - name: Install Qt
       uses: jurplel/install-qt-action@v2
-    - name: Install dependencies
-      run: |
-       sudo apt-get install -y mesa-common-dev libglu1-mesa-dev libgmp-dev
-       #needed by qt 5.15 on linux
-       sudo apt-get install libxcb-icccm4-dev libxcb-image0-dev libxcb-keysyms1-dev libxcb-render-util0-dev libxcb-xinerama0-dev
     - name: Setup env variables
       id: envs
       shell: bash
@@ -40,13 +43,14 @@ jobs:
           echo  ::set-output name=artifact_suffix::""
         fi
     - name: Configure and Build
+      shell: bash
       run: |
         mkdir build
         cd build
-        cmake -DCMAKE_BUILD_TYPE=MinSizeRel -DCMAKE_INSTALL_PREFIX=$INSTALL_PATH ${{steps.envs.outputs.doption}} ..
-        make -j4
+        cmake -G "NMake Makefiles" -DCMAKE_BUILD_TYPE=MinSizeRel -DCMAKE_INSTALL_PREFIX=$INSTALL_PATH ${{steps.envs.outputs.doption}} ..
+        jom -j4
     - name: Upload MeshLab Extra Plugins
       uses: actions/upload-artifact@v1
       with:
-        name: meshlab_linux_extra_plugins${{steps.envs.outputs.artifact_suffix}}
+        name: meshlab_windows_extra_plugins${{steps.envs.outputs.artifact_suffix}}
         path: build/distrib/plugins
