@@ -30,7 +30,8 @@ DAMAGE.
 #define GEOMETRY_INCLUDED
 #include <math.h>
 #include <vector>
-#include "Hash.h"
+#include <unordered_map>
+//#include "Hash.h"
 
 template<class Real>
 Real Random(void);
@@ -148,7 +149,7 @@ public:
 	int addTriangle(const int& p1,const int& p2,const int& p3);
 
 protected:
-	hash_map<long long,int> edgeMap;
+	std::unordered_map<long long,int> edgeMap;
 	static long long EdgeIndex(const int& p1,const int& p2);
 	double area(const Triangle& t);
 };

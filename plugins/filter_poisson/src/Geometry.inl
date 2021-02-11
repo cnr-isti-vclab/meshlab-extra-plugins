@@ -321,7 +321,7 @@ double Triangulation<Real>::area(void){
 }
 template<class Real>
 int Triangulation<Real>::addTriangle(const int& p1,const int& p2,const int& p3){
-	hash_map<long long,int>::iterator iter;
+	std::unordered_map<long long,int>::iterator iter;
 	int tIdx,eIdx,p[3];
 	p[0]=p1;
 	p[1]=p2;
