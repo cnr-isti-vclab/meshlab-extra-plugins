@@ -113,6 +113,7 @@ endif()
 # External
 set(EXTERNAL_DIR ${MESHLAB_SRC_DIR}/external)
 include(${EXTERNAL_DIR}/external_common.cmake)
+add_subdirectory(${EXTERNAL_DIR})
 
 # Start automoc/autouic/autorcc
 set(CMAKE_AUTOMOC ON)
@@ -126,8 +127,8 @@ set(CMAKE_INSTALL_RPATH)
 
 ### Plugin subdirectories
 set (MESHLAB_PLUGINS
-	#plugins/filter_globalregistration
-	)
+	plugins/filter_globalregistration
+)
 
 
 message(STATUS "\nConfiguring plugins")
