@@ -113,6 +113,11 @@ QString VirtualGoniometerFilterPlugin::pluginName() const
 	return "FilterVirtualGoniometer";
 }
 
+QString VirtualGoniometerFilterPlugin::vendor() const
+{
+	return "AMAAZE - UMN";
+}
+
 QString VirtualGoniometerFilterPlugin::filterName(FilterIDType filter) const
 {
  switch(filter)

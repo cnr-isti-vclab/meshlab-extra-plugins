@@ -25,7 +25,7 @@
 #define VIRTUAL_GONIOMETER_FILLTER_H
 
 #include <QObject>
-#include <common/interfaces/filter_plugin_interface.h>
+#include <common/plugins/interfaces/filter_plugin_interface.h>
 
 class VirtualGoniometerFilterPlugin : public QObject, public FilterPluginInterface
 {
@@ -49,6 +49,7 @@ class VirtualGoniometerFilterPlugin : public QObject, public FilterPluginInterfa
   //~VirtualGoniometerFilterPlugin();
 	
 	QString pluginName() const;
+	virtual QString vendor() const;
 	
 	QString filterInfo(FilterIDType filter) const;
    QString filterName(FilterIDType filter) const;

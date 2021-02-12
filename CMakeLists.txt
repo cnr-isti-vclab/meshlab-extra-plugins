@@ -124,6 +124,7 @@ set(CMAKE_INSTALL_RPATH)
 set (MESHLAB_PLUGINS
 	plugins/filter_globalregistration
 	plugins/filter_poisson
+	plugins/filter_virtualgoniometer
 )
 
 message(STATUS "\nConfiguring plugins")
