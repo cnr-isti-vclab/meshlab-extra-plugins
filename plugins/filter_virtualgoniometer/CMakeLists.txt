@@ -9,18 +9,18 @@ set(HEADERS virtual_goniometer.h)
 
 set(RESOURCES meshlab.qrc)
 
-add_library(filter_virtual_goniometer MODULE ${SOURCES} ${HEADERS} ${RESOURCES})
+add_library(filter_virtualgoniometer MODULE ${SOURCES} ${HEADERS} ${RESOURCES})
 
-target_include_directories(filter_virtual_goniometer PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
-target_link_libraries(filter_virtual_goniometer PUBLIC meshlab-common)
+target_include_directories(filter_virtualgoniometer PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
+target_link_libraries(filter_virtualgoniometer PUBLIC meshlab-common)
 
-set_property(TARGET filter_virtual_goniometer PROPERTY FOLDER Plugins)
+set_property(TARGET filter_virtualgoniometer PROPERTY FOLDER Plugins)
 
-set_property(TARGET filter_virtual_goniometer PROPERTY RUNTIME_OUTPUT_DIRECTORY
+set_property(TARGET filter_virtualgoniometer PROPERTY RUNTIME_OUTPUT_DIRECTORY
                                            ${MESHLAB_PLUGIN_OUTPUT_DIR})
 
-set_property(TARGET filter_virtual_goniometer PROPERTY LIBRARY_OUTPUT_DIRECTORY
+set_property(TARGET filter_virtualgoniometer PROPERTY LIBRARY_OUTPUT_DIRECTORY
                                            ${MESHLAB_PLUGIN_OUTPUT_DIR})
 
-install(TARGETS filter_virtual_goniometer DESTINATION ${MESHLAB_PLUGIN_INSTALL_DIR}
+install(TARGETS filter_virtualgoniometer DESTINATION ${MESHLAB_PLUGIN_INSTALL_DIR}
                 COMPONENT Plugins)
