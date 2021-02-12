@@ -55,7 +55,7 @@ class VirtualGoniometerFilterPlugin : public QObject, public FilterPluginInterfa
    QString filterName(FilterIDType filter) const;
    FilterClass getClass(const QAction *) const;
 
-   void initParameterSet(QAction *action, MeshModel &m, RichParameterList &parlst);
+   void initParameterList(const QAction *action, MeshDocument &m, RichParameterList &parlst);
    int getPreConditions(const QAction *) const;
    int postCondition(const QAction* ) const;
    int getRequirements(const QAction *);

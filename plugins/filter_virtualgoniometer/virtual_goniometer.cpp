@@ -165,8 +165,9 @@ int index_first_selected(MeshModel &m){
 }
 
 
-void VirtualGoniometerFilterPlugin::initParameterSet(QAction *action, MeshModel &m, RichParameterList &parlst)
+void VirtualGoniometerFilterPlugin::initParameterList(const QAction *action, MeshDocument &md, RichParameterList &parlst)
 {
+	MeshModel& m = *md.mm();
  switch(ID(action))
  {
 	case FP_QUALITY_VIRTUAL_GONIOMETER:
