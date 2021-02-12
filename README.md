@@ -32,7 +32,7 @@ We look forward for yout contribution!
    Paolo Cignoni                                                    \/)\/
    Visual Computing Lab  http://vcg.isti.cnr.it                    /\/|
    ISTI - Italian National Research Council                           |
-   Copyright(C) 2005-2021                                            \
+   Copyright(C) 2005-2021                                             \
 ```
 
 # Contacts
