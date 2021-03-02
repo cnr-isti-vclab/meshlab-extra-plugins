@@ -15,6 +15,13 @@ Be sure to download the right package of plugins: check for your OS and if you a
 If you are a developer and you want to share your plugin with the MeshLab community, feel free to open a PR.
 We look forward for yout contribution!
 
+## Disclaimer
+
+Plugins in this repository are published by third parties. 
+Visual Computing Lab will take care of updates required to keep plugins functional for newer versions of meshlab.
+For bugs and malfunctions of a specific plugin, please refer to the developer that released the plugin.
+You can open an issue on this repository, but please tag the developer of the plugin that present the issue.
+
 # License
 
  The Meshlab source is released under the [GPL License](LICENSE.txt).
