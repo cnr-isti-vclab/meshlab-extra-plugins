@@ -79,7 +79,7 @@ VirtualGoniometerFilterPlugin::VirtualGoniometerFilterPlugin()
       FP_QUALITY_VIRTUAL_GONIOMETER_UNDO <<
       FP_QUALITY_VIRTUAL_GONIOMETER_RESET;
 
-   FilterIDType tt;
+   ActionIDType tt;
 
    foreach(tt , types())
    {
@@ -118,7 +118,7 @@ QString VirtualGoniometerFilterPlugin::vendor() const
 	return "AMAAZE - UMN";
 }
 
-QString VirtualGoniometerFilterPlugin::filterName(FilterIDType filter) const
+QString VirtualGoniometerFilterPlugin::filterName(ActionIDType filter) const
 {
  switch(filter)
  {
@@ -131,7 +131,7 @@ QString VirtualGoniometerFilterPlugin::filterName(FilterIDType filter) const
  return QString("Unknown filter");
 }
 
-QString VirtualGoniometerFilterPlugin::filterInfo(FilterIDType filterId) const
+QString VirtualGoniometerFilterPlugin::filterInfo(ActionIDType filterId) const
 {
  switch(filterId)
  {
@@ -1372,7 +1372,7 @@ bool VirtualGoniometerFilterPlugin::applyFilter(const QAction* action, MeshDocum
    return true;
 }
 
-FilterPluginInterface::FilterClass VirtualGoniometerFilterPlugin::getClass(const QAction *action) const
+FilterPlugin::FilterClass VirtualGoniometerFilterPlugin::getClass(const QAction *action) const
 {
   switch(ID(action))
   {

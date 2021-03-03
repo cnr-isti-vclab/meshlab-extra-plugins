@@ -25,13 +25,13 @@
 #define VIRTUAL_GONIOMETER_FILLTER_H
 
 #include <QObject>
-#include <common/plugins/interfaces/filter_plugin_interface.h>
+#include <common/plugins/interfaces/filter_plugin.h>
 
-class VirtualGoniometerFilterPlugin : public QObject, public FilterPluginInterface
+class VirtualGoniometerFilterPlugin : public QObject, public FilterPlugin
 {
 	Q_OBJECT
-	MESHLAB_PLUGIN_IID_EXPORTER(FILTER_PLUGIN_INTERFACE_IID)
-	Q_INTERFACES(FilterPluginInterface)
+	MESHLAB_PLUGIN_IID_EXPORTER(FILTER_PLUGIN_IID)
+	Q_INTERFACES(FilterPlugin)
 		
 		public:
 	/* naming convention : 
@@ -51,8 +51,8 @@ class VirtualGoniometerFilterPlugin : public QObject, public FilterPluginInterfa
 	QString pluginName() const;
 	virtual QString vendor() const;
 	
-	QString filterInfo(FilterIDType filter) const;
-   QString filterName(FilterIDType filter) const;
+	QString filterInfo(ActionIDType filter) const;
+   QString filterName(ActionIDType filter) const;
    FilterClass getClass(const QAction *) const;
 
    void initParameterList(const QAction *action, MeshDocument &m, RichParameterList &parlst);

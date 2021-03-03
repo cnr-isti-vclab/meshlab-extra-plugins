@@ -58,7 +58,7 @@ PoissonPlugin::PoissonPlugin()
 {
     typeList << FP_POISSON_RECON;
 
-  foreach(FilterIDType tt , types())
+  foreach(ActionIDType tt , types())
 	  actionList << new QAction(filterName(tt), this);
 }
 
@@ -69,7 +69,7 @@ QString PoissonPlugin::pluginName() const
 
 // ST() must return the very short string describing each filtering action
 // (this string is used also to define the menu entry)
- QString PoissonPlugin::filterName(FilterIDType filterId) const
+ QString PoissonPlugin::filterName(ActionIDType filterId) const
 {
   switch(filterId) {
   case FP_POISSON_RECON :  return QString("Surface Reconstruction: Poisson");
@@ -80,7 +80,7 @@ QString PoissonPlugin::pluginName() const
 
 // Info() must return the longer string describing each filtering action
 // (this string is used in the About plugin dialog)
- QString PoissonPlugin::filterInfo(FilterIDType filterId) const
+ QString PoissonPlugin::filterInfo(ActionIDType filterId) const
 {
   switch(filterId) {
         case FP_POISSON_RECON :  return QString("Use the points and normal to build a surface using the Poisson Surface reconstruction approach.");
@@ -261,7 +261,7 @@ bool PoissonPlugin::applyFilter(const QAction * action, MeshDocument &md, std::m
   switch(ID(action))
   {
     case FP_POISSON_RECON :
-            return FilterClass (FilterPluginInterface::PointSet + FilterPluginInterface::Remeshing) ;
+            return FilterClass (FilterPlugin::PointSet + FilterPlugin::Remeshing) ;
     default: assert(0);
   }
   return FilterClass(0);

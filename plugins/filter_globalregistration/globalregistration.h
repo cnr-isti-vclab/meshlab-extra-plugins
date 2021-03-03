@@ -24,13 +24,13 @@
 #ifndef SAMPLEFILTERSPLUGIN_H
 #define SAMPLEFILTERSPLUGIN_H
 
-#include <common/plugins/interfaces/filter_plugin_interface.h>
+#include <common/plugins/interfaces/filter_plugin.h>
 
-class GlobalRegistrationPlugin : public QObject, public FilterPluginInterface
+class GlobalRegistrationPlugin : public QObject, public FilterPlugin
 {
 	Q_OBJECT
-	MESHLAB_PLUGIN_IID_EXPORTER(FILTER_PLUGIN_INTERFACE_IID)
-	Q_INTERFACES(FilterPluginInterface)
+	MESHLAB_PLUGIN_IID_EXPORTER(FILTER_PLUGIN_IID)
+	Q_INTERFACES(FilterPlugin)
 
 public:
     enum { FP_GLOBAL_REGISTRATION  } ;
@@ -40,8 +40,8 @@ public:
     QString pluginName() const;
     virtual QString vendor() const;
 
-    QString filterName(FilterIDType filter) const;
-    QString filterInfo(FilterIDType filter) const;
+    QString filterName(ActionIDType filter) const;
+    QString filterInfo(ActionIDType filter) const;
     void initParameterList(const QAction*, MeshDocument &/*m*/, RichParameterList & /*parent*/);
     bool applyFilter(const QAction* filter, MeshDocument &md, std::map<std::string, QVariant>& outputValues, unsigned int& postConditionMask, const RichParameterList & /*parent*/, vcg::CallBackPos * cb) ;
     int postCondition(const QAction* ) const {return MeshModel::MM_VERTCOORD; }

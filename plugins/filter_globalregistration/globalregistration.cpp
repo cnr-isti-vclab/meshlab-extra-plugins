@@ -34,7 +34,7 @@ GlobalRegistrationPlugin::GlobalRegistrationPlugin()
 {
     typeList << FP_GLOBAL_REGISTRATION;
 
-  foreach(FilterIDType tt , types())
+  foreach(ActionIDType tt , types())
       actionList << new QAction(filterName(tt), this);
 }
 
@@ -48,7 +48,7 @@ QString GlobalRegistrationPlugin::vendor() const
 	return "STORM - IRIT";
 }
 
-QString GlobalRegistrationPlugin::filterName(FilterIDType filterId) const
+QString GlobalRegistrationPlugin::filterName(ActionIDType filterId) const
 {
   switch(filterId) {
         case FP_GLOBAL_REGISTRATION :  return QString("Global registration");
@@ -57,7 +57,7 @@ QString GlobalRegistrationPlugin::filterName(FilterIDType filterId) const
   return QString();
 }
 
- QString GlobalRegistrationPlugin::filterInfo(FilterIDType filterId) const
+ QString GlobalRegistrationPlugin::filterInfo(ActionIDType filterId) const
 {
   switch(filterId) {
         case FP_GLOBAL_REGISTRATION :  return QString("Compute the rigid transformation aligning two 3d objects.");
@@ -70,10 +70,10 @@ GlobalRegistrationPlugin::FilterClass GlobalRegistrationPlugin::getClass(const Q
 {
   switch(ID(a))
     {
-        case FP_GLOBAL_REGISTRATION :  return FilterPluginInterface::PointSet;
+        case FP_GLOBAL_REGISTRATION :  return FilterPlugin::PointSet;
         default : assert(0);
     }
-    return FilterPluginInterface::Generic;
+    return FilterPlugin::Generic;
 }
 
 void GlobalRegistrationPlugin::initParameterList(const QAction *action,MeshDocument &md, RichParameterList & parlst)
