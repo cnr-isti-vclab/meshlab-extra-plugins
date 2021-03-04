@@ -136,9 +136,10 @@ QString VirtualGoniometerFilterPlugin::filterInfo(ActionIDType filterId) const
  switch(filterId)
  {
 	//case FP_QUALITY_VIRTUAL_GONIOMETER:       return tr("Compute the angle across a break edge.");
-   case FP_QUALITY_VIRTUAL_GONIOMETER:   return tr("Compute the angle across a break edge.<br><br>"
-                                                "This plugin was developed by researchers at the University of Minnesota affiliated with the <b><a href='http://amaaze.umn.edu'>AMAAZE</a></b> consortium.<br>" 
-                                                "Documentation is available here: <a href='https://amaaze.umn.edu/'>https://amaaze.umn.edu/</a>.<br>"
+   case FP_QUALITY_VIRTUAL_GONIOMETER:   return tr("<b>Virtual Goniometer</b>: Computes the angle across a break edge.<br><br>"
+     "Yezzi-Woodley, Calder, Olver, et al., <b>The Virtual Goniometer: A new method for measuring angles on 3D models of fragmentary bone and lithics.</b> <a href=https://arxiv.org/abs/2011.04898>arXiv preprint:2011.04898</a>, 2020.<br>"
+                                                "This plugin was developed by the <b><a href='http://amaaze.umn.edu'>AMAAZE</a></b> consortium.<br>"
+                                                "Documentation is available here: <a href='https://amaaze.umn.edu/software'>https://amaaze.umn.edu/software</a>.<br>"
                                                 "Questions or comments can be emailed to <a href= 'mailto:amaaze@umn.edu'>amaaze@umn.edu</a>.<br>");
 
 	case FP_QUALITY_VIRTUAL_GONIOMETER_NEXT:  return tr("Advance to next break curve.");
@@ -1333,12 +1334,17 @@ bool VirtualGoniometerFilterPlugin::applyFilter(const QAction* action, MeshDocum
          get_vertices(m, indices, vecx, vecy, vecz);
          get_normals(m, indices, normalx, normaly, normalz);
          int center_ind = 0;
-         geodesic_patch_info(m, &radius, &center_ind);
+
+         bool hasDistParam = tri::HasPerVertexAttribute(m.cm, "DistParam");
+         if(hasDistParam){
+            geodesic_patch_info(m, &radius, &center_ind);
+            surf_meanx = m.cm.vert[center_ind].P()[0];
+            surf_meany = m.cm.vert[center_ind].P()[1];
+            surf_meanz = m.cm.vert[center_ind].P()[2];
+         }else{
+            patch_statistics(vecx, vecy, vecz, &meanx, &meany, &meanz, &surf_meanx, &surf_meany, &surf_meanz, &radius);
+         }
          tri::UpdateSelection<CMeshO>::VertexClear(m.cm);
-         surf_meanx = m.cm.vert[center_ind].P()[0];
-         surf_meany = m.cm.vert[center_ind].P()[1];
-         surf_meanz = m.cm.vert[center_ind].P()[2];
-         //patch_statistics(vecx, vecy, vecz, &meanx, &meany, &meanz, &surf_meanx, &surf_meany, &surf_meanz, &radius);
          vector<int> C = VirtualGoniometer(vecx, vecy, vecz, normalx, normaly, normalz,  surf_meanx, surf_meany, surf_meanz, radius, theta, &fit);
 
 
