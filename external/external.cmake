@@ -3,4 +3,4 @@
 # SPDX-License-Identifier: BSL-1.0
 
 # opengr - optional and header-only, for filter_globalregistration
-include(${EXTERNAL_DIR}/opengr.cmake)
+include(${EXTRA_EXTERNAL_DIR}/opengr.cmake)
