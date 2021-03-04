@@ -22,20 +22,4 @@ set(HEADERS
     src/SparseMatrix.h
     src/Vector.h)
 
-add_library(filter_poisson MODULE ${SOURCES} ${HEADERS})
-
-target_include_directories(filter_poisson PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
-target_link_libraries(filter_poisson PUBLIC meshlab-common)
-
-set_property(TARGET filter_poisson PROPERTY FOLDER Plugins)
-
-set_property(TARGET filter_poisson PROPERTY RUNTIME_OUTPUT_DIRECTORY
-                                            ${MESHLAB_PLUGIN_OUTPUT_DIR})
-
-set_property(TARGET filter_poisson PROPERTY LIBRARY_OUTPUT_DIRECTORY
-                                            ${MESHLAB_PLUGIN_OUTPUT_DIR})
-
-install(
-    TARGETS filter_poisson
-    DESTINATION ${MESHLAB_PLUGIN_INSTALL_DIR}
-    COMPONENT Plugins)
+add_meshlab_plugin(filter_poisson ${SOURCES} ${HEADERS})
