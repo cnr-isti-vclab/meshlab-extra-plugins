@@ -12,6 +12,7 @@ include(${MESHLAB_SRC_DIR}/cmake/meshlab_tools.cmake)
 ### Build options
 option(BUILD_STRICT "Strictly enforce resolution of all symbols" ON)
 option(BUILD_WITH_DOUBLE_SCALAR "Use double type instead of float type for scalars" OFF)
+option(BUILD_PLUGIN_EXAMPLES "Build the plugin examples" OFF)
 
 ### Dependencies
 #list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
@@ -94,6 +95,10 @@ set (MESHLAB_PLUGINS
 	plugins/filter_virtualgoniometer
 )
 
+set (MESHLAB_PLUGIN_EXAMPLES
+	plugin_examples/filter_example
+)
+
 message(STATUS "\nConfiguring plugins")
 foreach(PLUGIN ${MESHLAB_PLUGINS})
 	if(EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/${PLUGIN}/CMakeLists.txt)
@@ -103,3 +108,15 @@ foreach(PLUGIN ${MESHLAB_PLUGINS})
 		message(STATUS " - ${PLUGIN} - Skipping, plugin or build system not found.")
 	endif()
 endforeach()
+
+if (BUILD_PLUGIN_EXAMPLES)
+	message(STATUS "\nConfiguring plugin examples")
+	foreach(PLUGIN ${MESHLAB_PLUGIN_EXAMPLES})
+		if(EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/${PLUGIN}/CMakeLists.txt)
+			message(STATUS "- ${PLUGIN}")
+			add_subdirectory(${PLUGIN})
+		else()
+			message(STATUS " - ${PLUGIN} - Skipping, plugin or build system not found.")
+		endif()
+	endforeach()
+endif()
