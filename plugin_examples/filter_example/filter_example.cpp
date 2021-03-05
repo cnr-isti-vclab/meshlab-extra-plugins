@@ -103,7 +103,7 @@ FilterExamplePlugin::FilterClass FilterExamplePlugin::getClass(const QAction *a)
  * @brief FilterSamplePlugin::filterArity
  * @return
  */
-FilterPlugin::FILTER_ARITY FilterExamplePlugin::filterArity(const QAction*) const
+FilterPlugin::FilterArity FilterExamplePlugin::filterArity(const QAction*) const
 {
 	return SINGLE_MESH;
 }
@@ -158,18 +158,24 @@ void FilterExamplePlugin::initParameterList(const QAction *action,MeshModel &m, 
  * @param cb: callback object to tell MeshLab the percentage of execution of the filter
  * @return true if the filter has been applied correctly, false otherwise
  */
-bool FilterExamplePlugin::applyFilter(const QAction * action, MeshDocument &md, std::map<std::string, QVariant>&, unsigned int& /*postConditionMask*/, const RichParameterList & par, vcg::CallBackPos *cb)
+std::map<std::string, QVariant> FilterExamplePlugin::applyFilter(
+		const QAction * action,
+		const RichParameterList & par,
+		MeshDocument &md,
+		unsigned int& /*postConditionMask*/,
+		vcg::CallBackPos *cb)
 {
 	switch(ID(action)) {
 	case FP_MOVE_VERTEX :
-		return vertexDisplacement(md, cb, par.getBool("UpdateNormals"), par.getAbsPerc("Displacement"));
+		vertexDisplacement(md, cb, par.getBool("UpdateNormals"), par.getAbsPerc("Displacement"));
+		break;
 	default :
-		assert(0);
-		return false;
+		wrongActionCalled(action);
 	}
+	return std::map<std::string, QVariant>();
 }
 
-bool FilterExamplePlugin::vertexDisplacement(
+void FilterExamplePlugin::vertexDisplacement(
 		MeshDocument &md,
 		vcg::CallBackPos *cb,
 		bool updateNormals,
@@ -198,8 +204,6 @@ bool FilterExamplePlugin::vertexDisplacement(
 	}
 
 	vcg::tri::UpdateBounding<CMeshO>::Box(m);
-
-	return true;
 }
 
 MESHLAB_PLUGIN_NAME_EXPORTER(FilterSamplePlugin)

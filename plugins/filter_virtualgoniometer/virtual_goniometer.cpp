@@ -871,12 +871,13 @@ void get_date_time(char *dt){
 }
 
 //Main code here
-bool VirtualGoniometerFilterPlugin::applyFilter(const QAction* action, MeshDocument &md, std::map<string, QVariant>&, unsigned int&, const RichParameterList & par, vcg::CallBackPos *)
-//bool VirtualGoniometerFilterPlugin::applyFilter(QAction *action, MeshDocument &md, RichParameterList & par, vcg::CallBackPos * cb)
+std::map<string, QVariant> VirtualGoniometerFilterPlugin::applyFilter(
+		const QAction* action,
+		const RichParameterList & par,
+		MeshDocument &md,
+		unsigned int&,
+		vcg::CallBackPos *)
 {
-   if (md.mm() == NULL)
-      return false;
-
    MeshModel &m=*(md.mm());
    CMeshO::VertexIterator vi;
 
@@ -1373,9 +1374,10 @@ bool VirtualGoniometerFilterPlugin::applyFilter(const QAction* action, MeshDocum
 
       } break;
 
-      default: assert(0);
+	  default:
+	   wrongActionCalled(action);
    }
-   return true;
+   return std::map<string, QVariant>();
 }
 
 FilterPlugin::FilterClass VirtualGoniometerFilterPlugin::getClass(const QAction *action) const

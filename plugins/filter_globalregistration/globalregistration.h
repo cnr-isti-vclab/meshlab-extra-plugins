@@ -32,21 +32,26 @@ class GlobalRegistrationPlugin : public QObject, public FilterPlugin
 	MESHLAB_PLUGIN_IID_EXPORTER(FILTER_PLUGIN_IID)
 	Q_INTERFACES(FilterPlugin)
 
-public:
-    enum { FP_GLOBAL_REGISTRATION  } ;
+	public:
+		enum { FP_GLOBAL_REGISTRATION  } ;
 
-    GlobalRegistrationPlugin();
+	GlobalRegistrationPlugin();
 
-    QString pluginName() const;
-    virtual QString vendor() const;
+	QString pluginName() const;
+	virtual QString vendor() const;
 
-    QString filterName(ActionIDType filter) const;
-    QString filterInfo(ActionIDType filter) const;
-    void initParameterList(const QAction*, MeshDocument &/*m*/, RichParameterList & /*parent*/);
-    bool applyFilter(const QAction* filter, MeshDocument &md, std::map<std::string, QVariant>& outputValues, unsigned int& postConditionMask, const RichParameterList & /*parent*/, vcg::CallBackPos * cb) ;
-    int postCondition(const QAction* ) const {return MeshModel::MM_VERTCOORD; }
-    FilterClass getClass(const QAction* a) const;
-    FILTER_ARITY filterArity(const QAction *) const {return SINGLE_MESH;}
+	QString filterName(ActionIDType filter) const;
+	QString filterInfo(ActionIDType filter) const;
+	void initParameterList(const QAction*, MeshDocument &/*m*/, RichParameterList & /*parent*/);
+	std::map<std::string, QVariant> applyFilter(
+			const QAction* action,
+			const RichParameterList & params,
+			MeshDocument &md,
+			unsigned int& postConditionMask,
+			vcg::CallBackPos * cb);
+	int postCondition(const QAction* ) const {return MeshModel::MM_VERTCOORD; }
+	FilterClass getClass(const QAction* a) const;
+	FilterArity filterArity(const QAction *) const {return SINGLE_MESH;}
 };
 
 

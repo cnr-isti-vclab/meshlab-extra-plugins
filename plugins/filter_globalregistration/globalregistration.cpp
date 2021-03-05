@@ -171,42 +171,44 @@ float align ( CMeshO* refMesh, CMeshO* trgMesh,
 
 // The Real Core Function doing the actual mesh processing.
 // Move Vertex of a random quantity
-bool GlobalRegistrationPlugin::applyFilter(
-		const QAction* /*filter*/,
-		MeshDocument& /*md*/,
-		std::map<std::string, QVariant>&,
-		unsigned int& /*postConditionMask*/,
+std::map<std::string, QVariant> GlobalRegistrationPlugin::applyFilter(
+		const QAction* filter,
 		const RichParameterList& par,
+		MeshDocument& /*md*/,
+		unsigned int& /*postConditionMask*/,
 		vcg::CallBackPos* /*cb*/)
 {
+	if (ID(filter) == FP_GLOBAL_REGISTRATION){
+		MeshModel *mmref = par.getMesh("refMesh");
+		MeshModel *mmtrg = par.getMesh("targetMesh");
+		CMeshO *refMesh=&mmref->cm;
+		CMeshO *trgMesh=&mmtrg->cm;
 
-    MeshModel *mmref = par.getMesh("refMesh");
-    MeshModel *mmtrg = par.getMesh("targetMesh");
-    CMeshO *refMesh=&mmref->cm;
-    CMeshO *trgMesh=&mmtrg->cm;
+		bool useSuper4PCS         = par.getBool("useSuper4PCS");
 
-    bool useSuper4PCS         = par.getBool("useSuper4PCS");
+		MatrixType mat;
+		float score = -1;
 
-    MatrixType mat;
-    float score = -1;
+		TransformVisitor v;
+		v.mesh = trgMesh;
+		v.plugin = this;
 
-    TransformVisitor v;
-    v.mesh = trgMesh;
-    v.plugin = this;
+		if (useSuper4PCS) {
+			using MatcherType = gr::Match4pcsBase<gr::FunctorSuper4PCS, PointType, TransformVisitor, gr::AdaptivePointFilter, gr::AdaptivePointFilter::Options>;
+			score = align< MatcherType >(refMesh, trgMesh, par, mat, v);
+		} else {
+			using MatcherType = gr::Match4pcsBase<gr::Functor4PCS, PointType, TransformVisitor, gr::AdaptivePointFilter, gr::AdaptivePointFilter::Options>;
+			score = align< MatcherType >(refMesh, trgMesh, par, mat, v);
+		}
 
-    if (useSuper4PCS) {
-        using MatcherType = gr::Match4pcsBase<gr::FunctorSuper4PCS, PointType, TransformVisitor, gr::AdaptivePointFilter, gr::AdaptivePointFilter::Options>;
-        score = align< MatcherType >(refMesh, trgMesh, par, mat, v);
-    } else {
-        using MatcherType = gr::Match4pcsBase<gr::Functor4PCS, PointType, TransformVisitor, gr::AdaptivePointFilter, gr::AdaptivePointFilter::Options>;
-        score = align< MatcherType >(refMesh, trgMesh, par, mat, v);
-    }
-
-    // run
-    log("Final LCP = %f", score);
-    v.mesh->Tr.FromEigenMatrix(mat);
-
-    return true;
+		// run
+		log("Final LCP = %f", score);
+		v.mesh->Tr.FromEigenMatrix(mat);
+	}
+	else {
+		wrongActionCalled(filter);
+	}
+	return std::map<std::string, QVariant>();
 }
 
 MESHLAB_PLUGIN_NAME_EXPORTER(GlobalRegistrationPlugin)

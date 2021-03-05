@@ -33,34 +33,39 @@ class VirtualGoniometerFilterPlugin : public QObject, public FilterPlugin
 	MESHLAB_PLUGIN_IID_EXPORTER(FILTER_PLUGIN_IID)
 	Q_INTERFACES(FilterPlugin)
 		
-		public:
+public:
 	/* naming convention : 
 		 - FP -> Filter Plugin
 		 - name of the plugin separated by _
 	*/
 	enum { 
-      FP_QUALITY_VIRTUAL_GONIOMETER,
-      FP_QUALITY_VIRTUAL_GONIOMETER_NEXT,
-      FP_QUALITY_VIRTUAL_GONIOMETER_UNDO,
-      FP_QUALITY_VIRTUAL_GONIOMETER_RESET
-	} ;
+		FP_QUALITY_VIRTUAL_GONIOMETER,
+		FP_QUALITY_VIRTUAL_GONIOMETER_NEXT,
+		FP_QUALITY_VIRTUAL_GONIOMETER_UNDO,
+		FP_QUALITY_VIRTUAL_GONIOMETER_RESET
+	};
 
 	VirtualGoniometerFilterPlugin();
-  //~VirtualGoniometerFilterPlugin();
+	//~VirtualGoniometerFilterPlugin();
 	
 	QString pluginName() const;
 	virtual QString vendor() const;
 	
 	QString filterInfo(ActionIDType filter) const;
-   QString filterName(ActionIDType filter) const;
-   FilterClass getClass(const QAction *) const;
+	QString filterName(ActionIDType filter) const;
+	FilterClass getClass(const QAction *) const;
 
-   void initParameterList(const QAction *action, MeshDocument &m, RichParameterList &parlst);
-   int getPreConditions(const QAction *) const;
-   int postCondition(const QAction* ) const;
-   int getRequirements(const QAction *);
-   bool applyFilter(const QAction* filter, MeshDocument& md, std::map<std::string, QVariant>&, unsigned int&, const RichParameterList& par, vcg::CallBackPos* cb) ;
-   FILTER_ARITY filterArity(const QAction *) const {return SINGLE_MESH;}
+	void initParameterList(const QAction *action, MeshDocument &m, RichParameterList &parlst);
+	int getPreConditions(const QAction *) const;
+	int postCondition(const QAction* ) const;
+	int getRequirements(const QAction *);
+	std::map<std::string, QVariant> applyFilter(
+		const QAction* action,
+		const RichParameterList & params,
+		MeshDocument &md,
+		unsigned int& postConditionMask,
+		vcg::CallBackPos * cb);
+	FilterArity filterArity(const QAction *) const {return SINGLE_MESH;}
 };
 
 #endif //VIRTUAL_GONIOMETER_FILLTER_H

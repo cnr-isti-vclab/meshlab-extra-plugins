@@ -142,7 +142,12 @@ void PoissonPlugin::initParameterList(const QAction* action, MeshModel &, RichPa
 
 // The Real Core Function doing the actual mesh processing.
 // Move Vertex of a random quantity
-bool PoissonPlugin::applyFilter(const QAction * action, MeshDocument &md, std::map<std::string, QVariant>&, unsigned int&, const RichParameterList & par, vcg::CallBackPos *cb)
+std::map<std::string, QVariant> PoissonPlugin::applyFilter(
+		const QAction * action,
+		const RichParameterList & par,
+		MeshDocument &md,
+		unsigned int&,
+		vcg::CallBackPos *cb)
 {
 	if (ID(action) == FP_POISSON_RECON) {
 		MeshModel &m=*md.mm();
@@ -172,8 +177,7 @@ bool PoissonPlugin::applyFilter(const QAction * action, MeshDocument &md, std::m
 		if (zeronrm == m.cm.vn)
 		{
 			log(GLLogStream::SYSTEM,"All the normal vectors are set to [0.0,0.0,0.0]. Poisson reconstruction filter requires a set of valid per-vertex normal. Filter will be aborted.");
-			this->errorMessage="All the normal vectors are set to [0.0,0.0,0.0]. Poisson reconstruction filter requires a set of valid per-vertex normal. Filter will be aborted.";
-			return false;
+			throw MLException("All the normal vectors are set to [0.0,0.0,0.0]. Poisson reconstruction filter requires a set of valid per-vertex normal. Filter will be aborted.");
 		}
 	
 		int cnt=0;
@@ -252,9 +256,11 @@ bool PoissonPlugin::applyFilter(const QAction * action, MeshDocument &md, std::m
 		log("Successfully created a mesh of %i faces",pm.cm.vn);
 	
 		pm.UpdateBoxAndNormals();
-		return true;
 	}
-    return false;
+	else {
+		wrongActionCalled(action);
+	}
+	return std::map<std::string, QVariant>();
 }
  PoissonPlugin::FilterClass PoissonPlugin::getClass(const QAction *action) const
 {
