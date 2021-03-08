@@ -174,24 +174,24 @@ void VirtualGoniometerFilterPlugin::initParameterList(const QAction *action, Mes
    MeshModel& m = *md.mm();
 
    //Format output filename
-   //sprintf(out_file,"%s/VirtualGoniometer_Measurements.csv",getenv("HOME"));
+   //Uses home directory if it can be found, otherwise uses current directory
    if(set_out_file){
       char *home = getenv("HOME");
       if(home != NULL){
          sprintf(out_file,"%s/VirtualGoniometer_Measurements.csv",home);
       }else{
          char *homedrive = getenv("HOMEDRIVE");
-         if(homedrive != NULL)
-            log("HomeDrive:%s\n",homedrive);
          char *homepath = getenv("HOMEPATH");
-         if(homepath != NULL)
-            log("HomePath:%s\n",homepath);
-
-         QString qs_path = m.pathName();
-         sprintf(out_file,"%s/VirtualGoniometer_Measurements.csv",(char *)qUtf8Printable(qs_path));
-      }
+         if((homepath != NULL) & (homedrive != NULL)){
+            sprintf(out_file,"%s%s/VirtualGoniometer_Measurements.csv",homedrive,homepath);
+         }
+         else{
+            QString qs_path = m.pathName();
+            sprintf(out_file,"%s/VirtualGoniometer_Measurements.csv",(char *)qUtf8Printable(qs_path));
+         }
       log("Save File is %s\n",out_file);
       set_out_file = FALSE;
+      }
    }
   
    switch(ID(action))
