@@ -189,9 +189,9 @@ void VirtualGoniometerFilterPlugin::initParameterList(const QAction *action, Mes
             QString qs_path = m.pathName();
             sprintf(out_file,"%s/VirtualGoniometer_Measurements.csv",(char *)qUtf8Printable(qs_path));
          }
+      }
       log("Save File is %s\n",out_file);
       set_out_file = FALSE;
-      }
    }
   
    switch(ID(action))
