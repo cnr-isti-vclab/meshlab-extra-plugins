@@ -182,10 +182,10 @@ void VirtualGoniometerFilterPlugin::initParameterList(const QAction *action, Mes
       }else{
          char *homedrive = getenv("HOMEDRIVE");
          if(homedrive != NULL)
-            log("%s\n",homedrive);
+            log("HomeDrive:%s\n",homedrive);
          char *homepath = getenv("HOMEPATH");
          if(homepath != NULL)
-            log("%s\n",homepath);
+            log("HomePath:%s\n",homepath);
 
          QString qs_path = m.pathName();
          sprintf(out_file,"%s/VirtualGoniometer_Measurements.csv",(char *)qUtf8Printable(qs_path));
@@ -946,12 +946,12 @@ std::map<string, QVariant> VirtualGoniometerFilterPlugin::applyFilter(
    get_date_time(date_time);
 
    //Check if file exists or not and write header if it does not exist
-   /*pFile = fopen(out_file,"r");
+   pFile = fopen(out_file,"r");
    if(pFile == NULL){
       pFile = fopen(out_file,"w");
       fprintf(pFile,"Mesh Name,Date,Measurement #,Break #,Colors,User Data,Angle,Number of Vertices,Radius,x,y,z,fit,SegParam\n");
    }
-   fclose(pFile);*/
+   fclose(pFile);
 
    //Internal state of goniometer
    static int break_number = 1; 
@@ -1348,9 +1348,9 @@ std::map<string, QVariant> VirtualGoniometerFilterPlugin::applyFilter(
                float frac_measurement_number = measurement_number + (float)j/(float)num_radii;
 
                //Output to csv file 
-               /*pFile = fopen(out_file,"a");
+               pFile = fopen(out_file,"a");
                fprintf(pFile,"%s,%s,%.2f,%d,%s/%s, ,%f,%lx,%f,%f,%f,%f,%f,%f\n",plyfile,date_time,frac_measurement_number,break_number,Color1_name[(break_number-1)%num_color_combos].c_str(),Color2_name[(break_number-1)%num_color_combos].c_str(),theta[0],points.size(),rad,m.cm.vert[i].P()[0],m.cm.vert[i].P()[1],m.cm.vert[i].P()[2],fit,SegParam);
-               fclose(pFile);*/
+               fclose(pFile);
 
                rad+=change;
             }
@@ -1399,9 +1399,9 @@ std::map<string, QVariant> VirtualGoniometerFilterPlugin::applyFilter(
          log("Saving to %s\n", out_file);
 
          //Output to csv file 
-         /*pFile = fopen(out_file,"a");
+         pFile = fopen(out_file,"a");
          fprintf(pFile,"%s,%s,%d,%d,%s/%s, ,%f,%d,%f,%f,%f,%f,%f,%f\n",plyfile,date_time,measurement_number,break_number,Color1_name[(break_number-1)%num_color_combos].c_str(),Color2_name[(break_number-1)%num_color_combos].c_str(),theta[0],num_selected_pts,radius,surf_meanx,surf_meany,surf_meanz,fit,SegParam);
-         fclose(pFile);*/
+         fclose(pFile);
 
          //Increment measurement number
          num_lines[measurement_number]=1;
