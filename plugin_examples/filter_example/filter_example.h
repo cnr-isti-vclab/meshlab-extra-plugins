@@ -24,6 +24,7 @@
 #ifndef MESHLAB_FILTER_EXAMPLE_PLUGIN_H
 #define MESHLAB_FILTER_EXAMPLE_PLUGIN_H
 
+// from meshlab common, include the abstract class file of filter plugins
 #include <common/plugins/interfaces/filter_plugin.h>
 
 /**
@@ -36,17 +37,19 @@
  * inherits from the QObject class (needed to make the plugin a Qt plugin)
  * and the FilterPlugin class.
  *
- * The first three macros are mandatory in Filter plugins.
- * Leave them there without modify them!
+ * Check the cpp file for the explanation of each member function of the class and
+ * whether they are mandatory to be implemented.
  */
 class FilterExamplePlugin : public QObject, public FilterPlugin
 {
+	//keep these three lines unchanged
 	Q_OBJECT
 	MESHLAB_PLUGIN_IID_EXPORTER(FILTER_PLUGIN_IID)
 	Q_INTERFACES(FilterPlugin)
 
 public:
-	enum { FP_MOVE_VERTEX  } ;
+	//enum used to give an ID to every filter implemented in the plugin
+	enum FileterIds {FP_MOVE_VERTEX};
 
 	FilterExamplePlugin();
 

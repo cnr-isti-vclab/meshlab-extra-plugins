@@ -24,21 +24,23 @@
 #include "filter_example.h"
 
 /**
- * @brief Constructor usually performs only two simple tasks of filling the two lists
+ * @brief
+ * Constructor usually performs only two simple tasks of filling the two lists
  *  - typeList: with all the possible id of the filtering actions
- *  - actionList with the corresponding actions. If you want to add icons to your filtering actions you can do here by construction the QActions accordingly
+ *  - actionList with the corresponding actions.
+ * If you want to add icons to your filtering actions you can do here by construction the QActions accordingly
  */
 FilterExamplePlugin::FilterExamplePlugin()
 { 
 	typeList << FP_MOVE_VERTEX;
 
-	for(ActionIDType tt : types())
+	for(const ActionIDType& tt : typeList)
 		actionList << new QAction(filterName(tt), this);
 }
 
 QString FilterExamplePlugin::pluginName() const
 {
-	return "FilterSample";
+	return "FilterExample";
 }
 
 QString FilterExamplePlugin::vendor() const
