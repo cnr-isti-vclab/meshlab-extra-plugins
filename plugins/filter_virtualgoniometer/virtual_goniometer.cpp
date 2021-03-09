@@ -31,7 +31,7 @@
 #include <vcg/complex/algorithms/point_outlier.h>
 #include <vcg/complex/algorithms/create/platonic.h>
 
-#include <QOpenGLContext>
+//#include <QOpenGLContext>
 #include <vcg/complex/algorithms/update/color.h>
 #include <vcg/complex/algorithms/update/normal.h>
 
@@ -58,14 +58,17 @@
 using namespace std;
 using namespace vcg;
 
-static float SegParam = 2.0;
-
 #define TRUE 1
 #define FALSE 0
 #define MIN(a,b) ((a)<(b)?(a):(b))
 #define MAX(a,b) ((a)>(b)?(a):(b))
 #define SIGN(a) (((a)<0)?(-1):(1))
 #define ABS(a) (((a)<0)?(-(a)):(a))
+
+static float SegParam = 2.0;
+static char out_file[1000] = "init";
+static bool set_out_file = TRUE;
+
 
 // ERROR CHECKING UTILITY
 #define CheckError(x,y); if ((x)) {this->errorMessage = (y); return false;}
@@ -168,10 +171,32 @@ int index_first_selected(MeshModel &m){
 
 void VirtualGoniometerFilterPlugin::initParameterList(const QAction *action, MeshDocument &md, RichParameterList &parlst)
 {
-	MeshModel& m = *md.mm();
- switch(ID(action))
- {
-	case FP_QUALITY_VIRTUAL_GONIOMETER:
+   MeshModel& m = *md.mm();
+
+   //Format output filename
+   //Uses home directory if it can be found, otherwise uses current directory
+   if(set_out_file){
+      char *home = getenv("HOME");
+      if(home != NULL){
+         sprintf(out_file,"%s/VirtualGoniometer_Measurements.csv",home);
+      }else{
+         char *homedrive = getenv("HOMEDRIVE");
+         char *homepath = getenv("HOMEPATH");
+         if((homepath != NULL) & (homedrive != NULL)){
+            sprintf(out_file,"%s%s/VirtualGoniometer_Measurements.csv",homedrive,homepath);
+         }
+         else{
+            QString qs_path = m.pathName();
+            sprintf(out_file,"%s/VirtualGoniometer_Measurements.csv",(char *)qUtf8Printable(qs_path));
+         }
+      }
+      log("Save File is %s\n",out_file);
+      set_out_file = FALSE;
+   }
+  
+   switch(ID(action))
+   {
+    case FP_QUALITY_VIRTUAL_GONIOMETER:
 	{
       //Get number of selected vertices
       int num_selected_pts = tri::UpdateSelection<CMeshO>::VertexCount(m.cm);
@@ -184,11 +209,14 @@ void VirtualGoniometerFilterPlugin::initParameterList(const QAction *action, Mes
             y = m.cm.vert[i].P()[1];
             z = m.cm.vert[i].P()[2];
          }
+
          parlst.addParam(RichPoint3f("Location", Point3f(x,y,z), "Location", "Location on mesh to run Virtual Goniometer."));
          parlst.addParam(RichFloat("Radius", 3.0, "Radius", "Radius of patch to use."));
          parlst.addParam(RichDynamicFloat("SegParam",SegParam,0.0,5.0,"Segmentation Parameter", "Parameter controlling how much influence the geometry has in segmentation."));
+         parlst.addParam(RichSaveFile("SaveFile", out_file, "*.csv", "Save File", "File to save angle measurements."));
          parlst.addParam(RichBool("Automatic Radius", FALSE,"Burst measurements", "Use automatic radius selection and take multiple measurements."));
-         parlst.addParam(RichBool("UpdateParam", FALSE, "Update Parameter Only", "Only update the segmentation parameter, and do not run the virtual goniometer."));
+         parlst.addParam(RichBool("UpdateParam", FALSE, "Update Seg Parameter", "Only update the segmentation parameter (does not run the virtual goniometer)."));
+         parlst.addParam(RichBool("UpdateSave", FALSE, "Update Save File", "Only update the Save File name (does not run the virtual goniometer)."));
       }
       break;
 
@@ -900,7 +928,6 @@ std::map<string, QVariant> VirtualGoniometerFilterPlugin::applyFilter(
    
    //General variables
    static bool first_VG = TRUE;
-   char out_file[1000];
    FILE *pFile;
    int i,j,k;
 
@@ -918,9 +945,6 @@ std::map<string, QVariant> VirtualGoniometerFilterPlugin::applyFilter(
    char date_time[1000];
    get_date_time(date_time);
 
-   //Format output filename
-   sprintf(out_file,"%s/VirtualGoniometer_Measurements.csv",getenv("HOME"));
-  
    //Check if file exists or not and write header if it does not exist
    pFile = fopen(out_file,"r");
    if(pFile == NULL){
@@ -1181,14 +1205,24 @@ std::map<string, QVariant> VirtualGoniometerFilterPlugin::applyFilter(
          //If no points are selected
          if (num_selected_pts <= 10) { 
 
+            bool update_param = par.getBool("UpdateParam");
+            if(update_param){
+               SegParam = par.getDynamicFloat("SegParam");
+               log("Updating Seg Parameter to %.2f\n",SegParam);
+            }
 
+            bool update_save = par.getBool("UpdateSave");
+            if(update_save){
+               //Get parameter file name
+               QString qs_filename = par.getSaveFileName("SaveFile");
+               strcpy(out_file,(char *)qUtf8Printable(qs_filename));
+               log("Updating Save File to %s\n",out_file);
+            }
 
-		      Point3m location =  par.getPoint3m("Location");
-            SegParam = par.getDynamicFloat("SegParam");
-            bool NoSeg = par.getBool("UpdateParam");
-            if(NoSeg)
+            if(update_param | update_save)
                break;
 
+            Point3m location =  par.getPoint3m("Location");
             float radius = par.getFloat("Radius");
             bool automatic = par.getBool("Automatic Radius");
             float a = Distance(m.cm.vert[0].cP(),location);
@@ -1315,11 +1349,12 @@ std::map<string, QVariant> VirtualGoniometerFilterPlugin::applyFilter(
 
                //Output to csv file 
                pFile = fopen(out_file,"a");
-               fprintf(pFile,"%s,%s,%.2f,%d,%s/%s, ,%f,%d,%f,%f,%f,%f,%f,%f\n",plyfile,date_time,frac_measurement_number,break_number,Color1_name[(break_number-1)%num_color_combos].c_str(),Color2_name[(break_number-1)%num_color_combos].c_str(),theta[0],points.size(),rad,m.cm.vert[i].P()[0],m.cm.vert[i].P()[1],m.cm.vert[i].P()[2],fit,SegParam);
+               fprintf(pFile,"%s,%s,%.2f,%d,%s/%s, ,%f,%lx,%f,%f,%f,%f,%f,%f\n",plyfile,date_time,frac_measurement_number,break_number,Color1_name[(break_number-1)%num_color_combos].c_str(),Color2_name[(break_number-1)%num_color_combos].c_str(),theta[0],points.size(),rad,m.cm.vert[i].P()[0],m.cm.vert[i].P()[1],m.cm.vert[i].P()[2],fit,SegParam);
                fclose(pFile);
 
                rad+=change;
             }
+            log("Saving to %s\n", out_file);
             num_lines[measurement_number]=num_radii;
             past_break_numbers[measurement_number]=break_number;
             measurement_number++;
@@ -1361,6 +1396,7 @@ std::map<string, QVariant> VirtualGoniometerFilterPlugin::applyFilter(
          //Print angle to log
          log("Break #%d, Radius=%.1f, Angle = %.0f, Fit = %.4f\n", break_number, radius, theta[0], fit);
          this->realTimeLog(QString("Virtual Goniometer"),m.shortName(),"Break #%d, Radius=%.1f, Angle = %.0f, Fit = %.4f\n", break_number, radius, theta[0], fit);
+         log("Saving to %s\n", out_file);
 
          //Output to csv file 
          pFile = fopen(out_file,"a");
