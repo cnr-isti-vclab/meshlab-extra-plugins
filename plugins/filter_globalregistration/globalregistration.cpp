@@ -32,10 +32,10 @@ using PointType = gr::Point3D<Scalarm>;
 
 GlobalRegistrationPlugin::GlobalRegistrationPlugin()
 {
-    typeList << FP_GLOBAL_REGISTRATION;
+	typeList = {FP_GLOBAL_REGISTRATION};
 
-  foreach(ActionIDType tt , types())
-      actionList << new QAction(filterName(tt), this);
+	foreach(ActionIDType tt , types())
+		actionList.push_back(new QAction(filterName(tt), this));
 }
 
 QString GlobalRegistrationPlugin::pluginName() const

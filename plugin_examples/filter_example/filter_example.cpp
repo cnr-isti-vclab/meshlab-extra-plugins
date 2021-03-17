@@ -32,10 +32,10 @@
  */
 FilterExamplePlugin::FilterExamplePlugin()
 { 
-	typeList << FP_MOVE_VERTEX;
+	typeList = { FP_MOVE_VERTEX};
 
 	for(const ActionIDType& tt : typeList)
-		actionList << new QAction(filterName(tt), this);
+		actionList.push_back(new QAction(filterName(tt), this));
 }
 
 QString FilterExamplePlugin::pluginName() const

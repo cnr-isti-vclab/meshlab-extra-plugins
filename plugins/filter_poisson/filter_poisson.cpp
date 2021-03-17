@@ -56,10 +56,10 @@ int Execute2(PoissonParam &Par, vector<Point3D<float> > Pts, vector<Point3D<floa
 
 PoissonPlugin::PoissonPlugin()
 {
-    typeList << FP_POISSON_RECON;
+	typeList = {FP_POISSON_RECON};
 
-  foreach(ActionIDType tt , types())
-	  actionList << new QAction(filterName(tt), this);
+	foreach(ActionIDType tt , types())
+		actionList.push_back(new QAction(filterName(tt), this));
 }
 
 QString PoissonPlugin::pluginName() const

@@ -69,46 +69,42 @@ static float SegParam = 2.0;
 static char out_file[1000] = "init";
 static bool set_out_file = TRUE;
 
-
-// ERROR CHECKING UTILITY
-#define CheckError(x,y); if ((x)) {this->errorMessage = (y); return false;}
-///////////////////////////////////////////////////////
-
 VirtualGoniometerFilterPlugin::VirtualGoniometerFilterPlugin()
 {
-   typeList <<
-      FP_QUALITY_VIRTUAL_GONIOMETER <<
-      FP_QUALITY_VIRTUAL_GONIOMETER_NEXT <<
-      FP_QUALITY_VIRTUAL_GONIOMETER_UNDO <<
-      FP_QUALITY_VIRTUAL_GONIOMETER_RESET;
+	typeList = {
+		FP_QUALITY_VIRTUAL_GONIOMETER,
+		FP_QUALITY_VIRTUAL_GONIOMETER_NEXT,
+		FP_QUALITY_VIRTUAL_GONIOMETER_UNDO,
+		FP_QUALITY_VIRTUAL_GONIOMETER_RESET
+	};
 
-   ActionIDType tt;
+	ActionIDType tt;
 
-   foreach(tt , types())
-   {
-      actionList << new QAction(filterName(tt), this);
-      if (tt == FP_QUALITY_VIRTUAL_GONIOMETER){
-         actionList.last()->setShortcut(Qt::CTRL + Qt::SHIFT + Qt::Key_V);
-         actionList.last()->setIcon(QIcon(":/images/virtual_goniometer.png"));
-         actionList.last()->setPriority(QAction::HighPriority);
-	   }
-      if (tt == FP_QUALITY_VIRTUAL_GONIOMETER_NEXT){
-         actionList.last()->setShortcut(Qt::CTRL + Qt::SHIFT + Qt::Key_N);
-         actionList.last()->setIcon(QIcon(":/images/virtual_goniometer_next.png"));
-         actionList.last()->setPriority(QAction::HighPriority);
-	   }
-      if (tt == FP_QUALITY_VIRTUAL_GONIOMETER_UNDO){
-         actionList.last()->setShortcut(Qt::CTRL + Qt::SHIFT + Qt::Key_Z);
-         actionList.last()->setIcon(QIcon(":/images/virtual_goniometer_undo.png"));
-         actionList.last()->setPriority(QAction::HighPriority);
-	   }
-      if (tt == FP_QUALITY_VIRTUAL_GONIOMETER_RESET){
-         actionList.last()->setShortcut(Qt::CTRL + Qt::SHIFT + Qt::Key_U);
-         actionList.last()->setIcon(QIcon(":/images/virtual_goniometer_reset.png"));
-         actionList.last()->setPriority(QAction::HighPriority);
-	   }
+	foreach(tt , types())
+	{
+		actionList.push_back(new QAction(filterName(tt), this));
+		if (tt == FP_QUALITY_VIRTUAL_GONIOMETER){
+			actionList.back()->setShortcut(Qt::CTRL + Qt::SHIFT + Qt::Key_V);
+			actionList.back()->setIcon(QIcon(":/images/virtual_goniometer.png"));
+			actionList.back()->setPriority(QAction::HighPriority);
+		}
+		if (tt == FP_QUALITY_VIRTUAL_GONIOMETER_NEXT){
+			actionList.back()->setShortcut(Qt::CTRL + Qt::SHIFT + Qt::Key_N);
+			actionList.back()->setIcon(QIcon(":/images/virtual_goniometer_next.png"));
+			actionList.back()->setPriority(QAction::HighPriority);
+		}
+		if (tt == FP_QUALITY_VIRTUAL_GONIOMETER_UNDO){
+			actionList.back()->setShortcut(Qt::CTRL + Qt::SHIFT + Qt::Key_Z);
+			actionList.back()->setIcon(QIcon(":/images/virtual_goniometer_undo.png"));
+			actionList.back()->setPriority(QAction::HighPriority);
+		}
+		if (tt == FP_QUALITY_VIRTUAL_GONIOMETER_RESET){
+			actionList.back()->setShortcut(Qt::CTRL + Qt::SHIFT + Qt::Key_U);
+			actionList.back()->setIcon(QIcon(":/images/virtual_goniometer_reset.png"));
+			actionList.back()->setPriority(QAction::HighPriority);
+		}
 
-   }
+	}
 }
 
 QString VirtualGoniometerFilterPlugin::pluginName() const
