@@ -96,6 +96,7 @@ set (MESHLAB_PLUGINS
 )
 
 set (MESHLAB_PLUGIN_EXAMPLES
+	plugin_examples/iomesh_example
 	plugin_examples/filter_example
 )
 
