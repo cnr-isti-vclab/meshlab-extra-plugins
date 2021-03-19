@@ -63,40 +63,44 @@ void SampleIOPlugin::exportMaskCapability(
 }
 
 
-bool SampleIOPlugin::open(
-		const QString &,
-		const QString &fileName,
+void SampleIOPlugin::open(
+		const QString& fileFormat,
+		const QString&fileName,
 		MeshModel &m,
 		int& ,
 		const RichParameterList & ,
-		vcg::CallBackPos *,
-		QWidget *)
+		vcg::CallBackPos *)
 {
-	int result = vcg::tri::io::ImporterSMF<CMeshO>::Open(m.cm, qPrintable(fileName));
-	if (result != vcg::tri::io::ImporterSMF<CMeshO>::E_NOERROR)
-	{
-		return false;
+	if (fileFormat.toUpper() == "SMF"){
+		int result = vcg::tri::io::ImporterSMF<CMeshO>::Open(m.cm, qPrintable(fileName));
+		if (result != vcg::tri::io::ImporterSMF<CMeshO>::E_NOERROR) {
+			throw MLException("Error while saving SMF file.");
+		}
 	}
-	return true;
+	else {
+		wrongOpenFormat(fileFormat);
+	}
 }
 
-bool SampleIOPlugin::save(
-		const QString &,
-		const QString &fileName,
+void SampleIOPlugin::save(
+		const QString& fileFormat,
+		const QString&fileName,
 		MeshModel &m,
 		const int mask,
 		const RichParameterList &,
-		vcg::CallBackPos *,
-		QWidget *)
+		vcg::CallBackPos *)
 {
-	QString errorMsgFormat = "Error encountered while exportering file %1:\n%2";
+	if (fileFormat.toUpper() == "SMF"){
+		QString errorMsgFormat = "Error encountered while exportering file %1:\n%2";
 
-	int result = vcg::tri::io::ExporterSMF<CMeshO>::Save(m.cm,qPrintable(fileName),mask);
-	if(result!=0) {
-		errorMessage = "Saving Error: " + errorMsgFormat.arg(fileName, vcg::tri::io::Exporter<CMeshO>::ErrorMsg(result));
-		return false;
+		int result = vcg::tri::io::ExporterSMF<CMeshO>::Save(m.cm,qPrintable(fileName),mask);
+		if(result!=0) {
+			throw MLException("Saving Error: " + errorMsgFormat.arg(fileName, vcg::tri::io::Exporter<CMeshO>::ErrorMsg(result)));
+		}
 	}
-	return true;
+	else {
+		wrongSaveFormat(fileFormat);
+	}
 }
 
 MESHLAB_PLUGIN_NAME_EXPORTER(SampleIOPlugin)

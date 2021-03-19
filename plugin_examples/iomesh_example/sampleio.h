@@ -44,23 +44,21 @@ public:
 			int &capability,
 			int &defaultBits) const;
 
-	bool open(
+	void open(
 			const QString &format, /// the extension of the format e.g. "PLY"
 			const QString &fileName, /// The name of the file to be opened
 			MeshModel &m, /// The mesh that is filled with the file content
 			int &mask, /// a bit mask that will be filled reporting what kind of data we have found in the file (per vertex color, texture coords etc)
 			const RichParameterList & par, /// The parameters that have been set up in the initPreOpenParameter()
-			vcg::CallBackPos *cb = nullptr, /// standard callback for reporting progress in the loading
-			QWidget *parent = nullptr);
+			vcg::CallBackPos *cb = nullptr); /// standard callback for reporting progress in the loading
 
-	bool save(
+	void save(
 			const QString &format, // the extension of the format e.g. "PLY"
 			const QString &fileName,
 			MeshModel &m,
 			const int mask,// a bit mask indicating what kind of the data present in the mesh should be saved (e.g. you could not want to save normals in ply files)
 			const RichParameterList & par,
-			vcg::CallBackPos *cb = 0,
-			QWidget *parent = 0);
+			vcg::CallBackPos *cb = 0);
 };
 
 #endif
