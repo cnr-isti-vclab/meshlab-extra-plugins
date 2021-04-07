@@ -64,16 +64,18 @@ endif()
 ### Enter subdirectories
 
 # VCGLib -- required
-if(NOT VCGDIR)
-	get_filename_component(VCGDIR "${MESHLAB_SRC_DIR}/vcglib" ABSOLUTE)
-	if(NOT EXISTS ${VCGDIR})
-		set(VCGDIR NOTFOUND)
-	endif()
+
+get_filename_component(VCGDIR "${MESHLAB_SRC_DIR}/vcglib" ABSOLUTE)
+if(EXISTS ${VCGDIR})
+	add_subdirectory(${VCGDIR})
+	set(VCGDIR "${VCGDIR}")
+	message(STATUS "- VCGLib - using using bundled source")
+else()
+	set(VCGDIR NOTFOUND)
 endif()
-set(VCGDIR "${VCGDIR}")
 
 if(NOT VCGDIR)
-	message(FATAL_ERROR "VCGLib not found. Please clone recursively the MeshLab repo.")
+	message(FATAL_ERROR "VCGLib not found. Please clone recursively the repo.")
 endif()
 
 
