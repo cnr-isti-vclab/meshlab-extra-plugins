@@ -43,7 +43,7 @@ jobs:
       run: |
         mkdir build
         cd build
-        cmake -DCMAKE_BUILD_TYPE=MinSizeRel -DCMAKE_INSTALL_PREFIX=$INSTALL_PATH ${{steps.envs.outputs.doption}} ..
+        cmake -DCMAKE_BUILD_TYPE=MinSizeRel -DMESHLAB_IS_NIGHTLY_VERSION=ON -DCMAKE_INSTALL_PREFIX=$INSTALL_PATH ${{steps.envs.outputs.doption}} ..
         make -j4
     - name: Upload MeshLab Extra Plugins
       uses: actions/upload-artifact@v1
