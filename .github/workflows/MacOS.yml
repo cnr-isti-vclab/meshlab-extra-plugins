@@ -49,4 +49,4 @@ jobs:
       uses: actions/upload-artifact@v1
       with:
         name: meshlab_macos_extra_plugins${{steps.envs.outputs.artifact_suffix}}
-        path: build/distrib/plugins
+        path: build/meshlab/src/distrib/plugins
