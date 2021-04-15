@@ -30,6 +30,7 @@ find_package(Eigen3)
 ### Enter subdirectories
 set (MESHLAB_PLUGINS "") #no meshlab plugins needed
 set (BUILD_ONLY_MESHLAB_LIBRARIES ON)
+set (ALLOW_BUNDLED_EXTERNAL_MESHLAB_LIBRARIES OFF)
 add_subdirectory(${MESHLAB_SRC_DIR})
 message(STATUS "Plugins output dir: " ${MESHLAB_PLUGIN_OUTPUT_DIR})
 
