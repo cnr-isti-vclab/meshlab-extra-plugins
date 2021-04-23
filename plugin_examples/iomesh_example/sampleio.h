@@ -21,16 +21,16 @@
 *                                                                           *
 ****************************************************************************/
 
-#ifndef IOMESH_EXAMPLE_PLUGIN_H
-#define IOMESH_EXAMPLE_PLUGIN_H
+#ifndef IO_EXAMPLE_PLUGIN_H
+#define IO_EXAMPLE_PLUGIN_H
 
-#include <common/plugins/interfaces/iomesh_plugin.h>
+#include <common/plugins/interfaces/io_plugin.h>
 
-class SampleIOPlugin : public QObject, public IOMeshPlugin
+class SampleIOPlugin : public QObject, public IOPlugin
 { 
 	Q_OBJECT
-	MESHLAB_PLUGIN_IID_EXPORTER(IOMESH_PLUGIN_IID)
-	Q_INTERFACES(IOMeshPlugin)
+	MESHLAB_PLUGIN_IID_EXPORTER(IO_PLUGIN_IID)
+	Q_INTERFACES(IOPlugin)
 
 public:
 
