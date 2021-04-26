@@ -96,7 +96,7 @@ QString PoissonPlugin::pluginName() const
 // - the string shown in the dialog
 // - the default value
 // - a possibly long string describing the meaning of that parameter (shown as a popup help in the dialog)
-void PoissonPlugin::initParameterList(const QAction* action, MeshModel &, RichParameterList & parlst)
+void PoissonPlugin::initParameterList(const QAction* action, const MeshModel &, RichParameterList & parlst)
 //void PoissonPlugin::initParList(QAction *action, MeshModel &m, RichParameterSet &parlst)
 {
      switch(ID(action))	 {

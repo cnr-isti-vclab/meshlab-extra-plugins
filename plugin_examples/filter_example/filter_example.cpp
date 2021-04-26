@@ -140,7 +140,7 @@ int FilterExamplePlugin::postCondition(const QAction*) const
  * @param m
  * @param parlst
  */
-void FilterExamplePlugin::initParameterList(const QAction *action,MeshModel &m, RichParameterList & parlst)
+void FilterExamplePlugin::initParameterList(const QAction *action, const MeshModel &m, RichParameterList & parlst)
 {
 	switch(ID(action)) {
 	case FP_MOVE_VERTEX :

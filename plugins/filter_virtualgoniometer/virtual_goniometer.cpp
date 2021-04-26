@@ -149,7 +149,22 @@ QString VirtualGoniometerFilterPlugin::filterInfo(ActionIDType filterId) const
  return QString("Unknown filter");
 }
 
-int index_first_selected(MeshModel &m){
+int index_first_selected(const MeshModel &m){
+
+   int i=0;
+   CMeshO::ConstVertexIterator vi;
+   for(vi=m.cm.vert.begin(); vi!=m.cm.vert.end(); ++vi)
+   {
+      if(!(*vi).IsD() && (*vi).IsS()){
+         //(*vi).ClearS();
+         break;
+      }
+      i++;
+   }   
+   return i;
+}
+
+int index_first_selected_and_clear(MeshModel &m){
 
    int i=0;
    CMeshO::VertexIterator vi;
@@ -160,14 +175,14 @@ int index_first_selected(MeshModel &m){
          break;
       }
       i++;
-   }   
+   }
    return i;
 }
 
 
-void VirtualGoniometerFilterPlugin::initParameterList(const QAction *action, MeshDocument &md, RichParameterList &parlst)
+void VirtualGoniometerFilterPlugin::initParameterList(const QAction *action, const MeshDocument &md, RichParameterList &parlst)
 {
-   MeshModel& m = *md.mm();
+   const MeshModel& m = *md.mm();
 
    //Format output filename
    //Uses home directory if it can be found, otherwise uses current directory
@@ -1284,7 +1299,7 @@ std::map<string, QVariant> VirtualGoniometerFilterPlugin::applyFilter(
             KdTree<typename CMeshO::ScalarType>::PriorityQueue queue;
 
             //Find index of selected point
-            i = index_first_selected(m);
+            i = index_first_selected_and_clear(m);
 
             //Find minimum/maximum radius
             float rmin = 0.0, rmax = 0.0;

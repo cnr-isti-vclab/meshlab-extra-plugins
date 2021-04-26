@@ -76,14 +76,14 @@ GlobalRegistrationPlugin::FilterClass GlobalRegistrationPlugin::getClass(const Q
     return FilterPlugin::Generic;
 }
 
-void GlobalRegistrationPlugin::initParameterList(const QAction *action,MeshDocument &md, RichParameterList & parlst)
+void GlobalRegistrationPlugin::initParameterList(const QAction *action, const MeshDocument &md, RichParameterList & parlst)
 {
 
      switch(ID(action))	 {
         case FP_GLOBAL_REGISTRATION :
 
-         parlst.addParam(RichMesh ("refMesh",md.mm(),&md, "Reference Mesh",	"Reference point-cloud or mesh"));
-         parlst.addParam(RichMesh ("targetMesh",md.mm(),&md, "Target Mesh",	"Point-cloud or mesh to be aligned to the reference"));
+         parlst.addParam(RichMesh ("refMesh", md.mm()->id(),&md, "Reference Mesh",	"Reference point-cloud or mesh"));
+         parlst.addParam(RichMesh ("targetMesh",md.mm()->id(),&md, "Target Mesh",	"Point-cloud or mesh to be aligned to the reference"));
          parlst.addParam(RichAbsPerc("overlap", 50, 0, 100, "Overlap Ratio", "Overlap ratio between the two clouds (command line option: -o)"));
          parlst.addParam(RichFloat("delta",   0.1, "Registration tolerance", "Tolerance value for the congruent set exploration and LCP computation (command line option: -d)"));
          parlst.addParam(RichInt("nbSamples", 200, "Number of samples", "Number of samples used in each mesh (command line option: -n)"));
@@ -174,13 +174,13 @@ float align ( CMeshO* refMesh, CMeshO* trgMesh,
 std::map<std::string, QVariant> GlobalRegistrationPlugin::applyFilter(
 		const QAction* filter,
 		const RichParameterList& par,
-		MeshDocument& /*md*/,
+		MeshDocument& md,
 		unsigned int& /*postConditionMask*/,
 		vcg::CallBackPos* /*cb*/)
 {
 	if (ID(filter) == FP_GLOBAL_REGISTRATION){
-		MeshModel *mmref = par.getMesh("refMesh");
-		MeshModel *mmtrg = par.getMesh("targetMesh");
+		MeshModel *mmref = md.getMesh(par.getMeshId("refMesh"));
+		MeshModel *mmtrg = md.getMesh(par.getMeshId("targetMesh"));
 		CMeshO *refMesh=&mmref->cm;
 		CMeshO *trgMesh=&mmtrg->cm;
 
