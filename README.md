@@ -13,7 +13,7 @@ Be sure to download the right package of plugins: check for your OS and if you a
 # Contributing
 
 If you are a developer and you want to share your plugin with the MeshLab community, feel free to open a PR.
-We look forward for yout contribution!
+We look forward for your contribution!
 
 ## Disclaimer
 
