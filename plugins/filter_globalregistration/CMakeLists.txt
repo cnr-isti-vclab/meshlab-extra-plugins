@@ -12,12 +12,8 @@ if(TARGET external-opengr)
 	add_meshlab_plugin(filter_globalregistration ${SOURCES} ${HEADERS})
 
 	target_link_libraries(filter_globalregistration PRIVATE external-opengr)
-	if(OpenMP_CXX_FOUND)
+	if(OpenMP_CXX_FOUND AND NOT APPLE)
 		target_link_libraries(filter_globalregistration PRIVATE OpenMP::OpenMP_CXX)
-	endif()
-	if (APPLE)
-		set(CMAKE_BUILD_WITH_INSTALL_RPATH TRUE)
-		set(CMAKE_INSTALL_RPATH "@executable_path/../Frameworks")
 	endif()
 
 else()
