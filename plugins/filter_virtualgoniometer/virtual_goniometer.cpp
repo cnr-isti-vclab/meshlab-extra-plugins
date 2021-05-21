@@ -180,8 +180,9 @@ int index_first_selected_and_clear(MeshModel &m){
 }
 
 
-void VirtualGoniometerFilterPlugin::initParameterList(const QAction *action, const MeshDocument &md, RichParameterList &parlst)
+RichParameterList VirtualGoniometerFilterPlugin::initParameterList(const QAction *action, const MeshDocument &md)
 {
+   RichParameterList parlst;
    const MeshModel& m = *md.mm();
 
    //Format output filename
@@ -246,6 +247,7 @@ void VirtualGoniometerFilterPlugin::initParameterList(const QAction *action, con
 	} break;
 
  }
+   return parlst;
 }
 
 void remove_last_lines(char *filename, int n)

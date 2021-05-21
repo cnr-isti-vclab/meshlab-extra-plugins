@@ -42,7 +42,7 @@ class GlobalRegistrationPlugin : public QObject, public FilterPlugin
 
 	QString filterName(ActionIDType filter) const;
 	QString filterInfo(ActionIDType filter) const;
-	void initParameterList(const QAction*, const MeshDocument &/*m*/, RichParameterList & /*parent*/);
+	RichParameterList initParameterList(const QAction*, const MeshDocument &/*m*/);
 	std::map<std::string, QVariant> applyFilter(
 			const QAction* action,
 			const RichParameterList & params,

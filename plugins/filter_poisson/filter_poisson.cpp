@@ -96,9 +96,9 @@ QString PoissonPlugin::pluginName() const
 // - the string shown in the dialog
 // - the default value
 // - a possibly long string describing the meaning of that parameter (shown as a popup help in the dialog)
-void PoissonPlugin::initParameterList(const QAction* action, const MeshModel &, RichParameterList & parlst)
-//void PoissonPlugin::initParList(QAction *action, MeshModel &m, RichParameterSet &parlst)
+RichParameterList PoissonPlugin::initParameterList(const QAction* action, const MeshModel &)
 {
+     RichParameterList parlst;
      switch(ID(action))	 {
         case FP_POISSON_RECON :
           //parlst.addParam(new RichBool ("RecomputeNormals",
@@ -138,6 +138,7 @@ void PoissonPlugin::initParameterList(const QAction* action, const MeshModel &, 
             break;
    default: break; // do not add any parameter for the other filters
   }
+     return parlst;
 }
 
 // The Real Core Function doing the actual mesh processing.

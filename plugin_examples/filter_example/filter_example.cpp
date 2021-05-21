@@ -129,8 +129,7 @@ int FilterExamplePlugin::postCondition(const QAction*) const
 }
 
 /**
- * @brief This function define the needed parameters for each filter. Return true if the filter has some parameters
- * it is called every time, so you can set the default value of parameters according to the mesh
+ * @brief This function returns a list of parameters needed by each filter.
  * For each parameter you need to define,
  * - the name of the parameter,
  * - the default value
@@ -138,10 +137,10 @@ int FilterExamplePlugin::postCondition(const QAction*) const
  * - a possibly long string describing the meaning of that parameter (shown as a popup help in the dialog)
  * @param action
  * @param m
- * @param parlst
  */
-void FilterExamplePlugin::initParameterList(const QAction *action, const MeshModel &m, RichParameterList & parlst)
+RichParameterList FilterExamplePlugin::initParameterList(const QAction *action, const MeshModel &m)
 {
+	RichParameterList parlst;
 	switch(ID(action)) {
 	case FP_MOVE_VERTEX :
 		parlst.addParam(RichBool ("UpdateNormals", true, "Recompute normals", "Toggle the recomputation of the normals after the random displacement.\n\nIf disabled the face normals will remains unchanged resulting in a visually pleasant effect."));
@@ -150,13 +149,14 @@ void FilterExamplePlugin::initParameterList(const QAction *action, const MeshMod
 	default :
 		assert(0);
 	}
+	return parlst;
 }
 
 /**
  * @brief The Real Core Function doing the actual mesh processing.
  * @param action
  * @param md: an object containing all the meshes and rasters of MeshLab
- * @param par: the set of parameters of each filter
+ * @param par: the set of parameters of each filter, with the values set by the user
  * @param cb: callback object to tell MeshLab the percentage of execution of the filter
  * @return true if the filter has been applied correctly, false otherwise
  */

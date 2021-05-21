@@ -76,9 +76,9 @@ GlobalRegistrationPlugin::FilterClass GlobalRegistrationPlugin::getClass(const Q
     return FilterPlugin::Generic;
 }
 
-void GlobalRegistrationPlugin::initParameterList(const QAction *action, const MeshDocument &md, RichParameterList & parlst)
+RichParameterList GlobalRegistrationPlugin::initParameterList(const QAction *action, const MeshDocument &md)
 {
-
+     RichParameterList parlst;
      switch(ID(action))	 {
         case FP_GLOBAL_REGISTRATION :
 
@@ -94,7 +94,8 @@ void GlobalRegistrationPlugin::initParameterList(const QAction *action, const Me
 
          break;
      default : assert(0);
-    }
+     }
+     return parlst;
 }
 
 

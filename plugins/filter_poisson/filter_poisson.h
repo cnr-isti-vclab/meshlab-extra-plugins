@@ -56,7 +56,7 @@ public:
 	FilterArity filterArity(const QAction*) const { return FilterPlugin::VARIABLE; }
 	virtual QString filterName(ActionIDType filter) const;
 	virtual QString filterInfo(ActionIDType filter) const;
-	virtual void initParameterList(const QAction *, const MeshModel &/*m*/, RichParameterList & /*parent*/);
+	RichParameterList initParameterList(const QAction *, const MeshModel &/*m*/);
 	std::map<std::string, QVariant> applyFilter(
 			const QAction* action,
 			const RichParameterList & params,

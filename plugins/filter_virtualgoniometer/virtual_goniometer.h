@@ -55,7 +55,7 @@ public:
 	QString filterName(ActionIDType filter) const;
 	FilterClass getClass(const QAction *) const;
 
-	void initParameterList(const QAction *action, const MeshDocument &m, RichParameterList &parlst);
+	RichParameterList initParameterList(const QAction *action, const MeshDocument &m);
 	int getPreConditions(const QAction *) const;
 	int postCondition(const QAction* ) const;
 	int getRequirements(const QAction *);
