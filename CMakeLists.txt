@@ -31,6 +31,7 @@ find_package(Eigen3)
 set (MESHLAB_PLUGINS "") #no meshlab plugins needed
 set (BUILD_ONLY_MESHLAB_LIBRARIES ON)
 set (ALLOW_OPTIONAL_EXTERNAL_MESHLAB_LIBRARIES OFF)
+set(CMAKE_POLICY_DEFAULT_CMP0077 NEW)
 add_subdirectory(${MESHLAB_SRC_DIR})
 message(STATUS "Plugins output dir: " ${MESHLAB_PLUGIN_OUTPUT_DIR})
 
