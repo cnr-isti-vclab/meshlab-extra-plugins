@@ -140,6 +140,11 @@ jobs:
           echo  ::set-output name=doption::""
           echo  ::set-output name=artifact_suffix::""
         fi
+    - name: Set Certificate
+      run: |
+        New-Item -ItemType directory -Path certificate
+        Set-Content -Path certificate\certificate.txt -Value '${{ secrets.WIN_CERTIFICATE }}'
+        certutil -decode certificate\certificate.txt certificate\certificate.pfx
     - name: Configure and Build
       shell: bash
       run: |
@@ -147,6 +152,9 @@ jobs:
         cd build
         cmake -GNinja -DCMAKE_BUILD_TYPE=MinSizeRel -DCMAKE_INSTALL_PREFIX=$INSTALL_PATH ${{steps.envs.outputs.doption}} ..
         ninja
+    - name: Sign Plugins
+      run: |
+        .\meshlab\scripts\Windows\resources\windows_sign_dlls.ps1 -pssw '${{ secrets.WIN_CERTIFICATE_PWD }}' -path 'build\meshlab\src\distrib\plugins'
     - name: Upload MeshLab Extra Plugins
       uses: actions/upload-artifact@v2
       with:
