@@ -153,9 +153,9 @@ jobs:
         fi
     - name: Set Certificate
       run: |
-        New-Item -ItemType directory -Path certificate
-        Set-Content -Path certificate\certificate.txt -Value '${{ secrets.WIN_CERTIFICATE }}'
-        certutil -decode certificate\certificate.txt certificate\certificate.pfx
+        New-Item -ItemType directory -Path meshlab\certificate
+        Set-Content -Path meshlab\certificate\certificate.txt -Value '${{ secrets.WIN_CERTIFICATE }}'
+        certutil -decode meshlab\certificate\certificate.txt meshlab\certificate\certificate.pfx
     - name: Configure and Build
       shell: bash
       run: |
