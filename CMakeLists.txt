@@ -13,7 +13,7 @@ include(${MESHLAB_SRC_DIR}/cmake/meshlab_tools.cmake)
 option(BUILD_PLUGIN_EXAMPLES "Build the plugin examples" OFF)
 
 ### Dependencies
-#list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
+list(APPEND CMAKE_MODULE_PATH "${MESHLAB_SRC_DIR}/cmake")
 message(STATUS "Searching for required components")
 find_package(OpenGL REQUIRED)
 
