@@ -4,7 +4,7 @@
 
 option(ALLOW_BUNDLED_OPENGR "Allow use of bundled OpenGR source" ON)
 
-set(OPENGR_DIR ${EXTRA_EXTERNAL_DIR}/OpenGR)
+set(OPENGR_DIR ${CMAKE_CURRENT_LIST_DIR}/OpenGR)
 
 if(ALLOW_BUNDLED_OPENGR AND EXISTS "${OPENGR_DIR}/src/gr/algorithms/match4pcsBase.h")
 	message(STATUS "- OpenGR - using bundled source")

@@ -37,14 +37,14 @@ message(STATUS "Plugins output dir: " ${MESHLAB_PLUGIN_OUTPUT_DIR})
 
 
 # External
-set(EXTRA_EXTERNAL_DIR ${CMAKE_CURRENT_SOURCE_DIR}/external)
-add_subdirectory(${EXTRA_EXTERNAL_DIR})
+add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/external)
 
 # Clear RPATH before adding plugins
 set(CMAKE_INSTALL_RPATH)
 
 ### Plugin subdirectories
 set (MESHLAB_PLUGINS
+	plugins/filter_csg
 	plugins/filter_globalregistration
 	plugins/filter_poisson
 	plugins/filter_virtualgoniometer

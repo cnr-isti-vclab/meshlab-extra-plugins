@@ -3,4 +3,9 @@
 # SPDX-License-Identifier: BSL-1.0
 
 message(STATUS "Searching for optional components")
-include(${EXTRA_EXTERNAL_DIR}/external.cmake)
+
+# gmp or mpir - optional, for filter_csg
+include(${CMAKE_CURRENT_SOURCE_DIR}/gmp-mpir.cmake)
+
+# opengr - optional and header-only, for filter_globalregistration
+include(${CMAKE_CURRENT_SOURCE_DIR}/opengr.cmake)
