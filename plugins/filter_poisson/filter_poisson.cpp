@@ -256,7 +256,7 @@ std::map<std::string, QVariant> PoissonPlugin::applyFilter(
 	//	Build(m.cm,mesh.inCorePoints,mesh.triangles);
 		log("Successfully created a mesh of %i faces",pm.cm.vn);
 	
-		pm.UpdateBoxAndNormals();
+		pm.updateBoxAndNormals();
 	}
 	else {
 		wrongActionCalled(action);

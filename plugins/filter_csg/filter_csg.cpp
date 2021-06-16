@@ -81,9 +81,12 @@ RichParameterList FilterCSG::initParameterList(const QAction *action, const Mesh
 	case FP_CSG:
 	{
 		const MeshModel *target = md.mm();
-		foreach (target, md.meshList)
-			if (target != md.mm())
+		for (const MeshModel* trg : md.meshIterator()) {
+			if (trg != md.mm()) {
+				target = trg;
 				break;
+			}
+		}
 
 		CMeshO::ScalarType mindim = min(md.mm()->cm.bbox.Dim().V(md.mm()->cm.bbox.MinDim()),
 										target->cm.bbox.Dim().V(target->cm.bbox.MinDim()));
