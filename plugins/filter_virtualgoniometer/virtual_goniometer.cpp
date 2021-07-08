@@ -1458,8 +1458,12 @@ int VirtualGoniometerFilterPlugin::postCondition(const QAction* action) const
 {
 	switch(ID(action))
 	{
-   }
-  return MeshModel::MM_ALL;
+	case FP_QUALITY_VIRTUAL_GONIOMETER: return MeshModel::MM_VERTCOLOR;
+	case FP_QUALITY_VIRTUAL_GONIOMETER_NEXT: return MeshModel::MM_VERTCOLOR;
+	case FP_QUALITY_VIRTUAL_GONIOMETER_UNDO: return MeshModel::MM_VERTCOLOR;
+	case FP_QUALITY_VIRTUAL_GONIOMETER_RESET: return MeshModel::MM_VERTCOLOR;
+	}
+	return MeshModel::MM_ALL;
 }
 
 int VirtualGoniometerFilterPlugin::getPreConditions(const QAction* action) const
