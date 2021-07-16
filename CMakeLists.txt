@@ -2,12 +2,11 @@
 # Copyright 2019, 2020, Visual Computing Lab, ISTI - Italian National Research Council
 # SPDX-License-Identifier: BSL-1.0
 
-cmake_minimum_required(VERSION 3.13)
+cmake_minimum_required(VERSION 3.10)
 project(MeshLabExtraPlugins)
 
 set (MESHLAB_SRC_DIR ${CMAKE_CURRENT_SOURCE_DIR}/meshlab/src)
 include(${MESHLAB_SRC_DIR}/cmake/meshlab_global_settings.cmake)
-include(${MESHLAB_SRC_DIR}/cmake/meshlab_tools.cmake)
 
 ### Build options
 option(BUILD_PLUGIN_EXAMPLES "Build the plugin examples" OFF)

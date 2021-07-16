@@ -81,9 +81,9 @@ RichParameterList FilterCSG::initParameterList(const QAction *action, const Mesh
 	case FP_CSG:
 	{
 		const MeshModel *target = md.mm();
-		for (const MeshModel* trg : md.meshIterator()) {
-			if (trg != md.mm()) {
-				target = trg;
+		for (const MeshModel& trg : md.meshIterator()) {
+			if (&trg != md.mm()) {
+				target = &trg;
 				break;
 			}
 		}
