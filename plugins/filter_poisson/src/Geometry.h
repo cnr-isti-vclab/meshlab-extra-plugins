@@ -26,12 +26,16 @@ ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF S
 DAMAGE.
 */
 
+#pragma once
+#ifndef FILE_h
+#define FILE_h
+#include <bits/types/FILE.h>
+#endif // FILE.h
 #ifndef GEOMETRY_INCLUDED
 #define GEOMETRY_INCLUDED
 #include <math.h>
 #include <vector>
 #include <unordered_map>
-#include <bits/types/FILE.h>
 //#include "Hash.h"
 
 template<class Real>
