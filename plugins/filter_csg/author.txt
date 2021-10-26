@@ -1,0 +1,6 @@
+Filter CSG
+
+Author: @cnr-isti-vclab
+
+This is a plugin that was part of old versions of meshlab and has been removed in favour of Filter Mesh Booleans.
+Therefore this plugin is not supported anymore and it is here just for old backward compatibility.

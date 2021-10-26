@@ -17,10 +17,11 @@ We look forward for your contribution!
 
 ## Disclaimer
 
-Plugins in this repository are published by third parties. 
+Plugins in this repository are published by third parties.
 Visual Computing Lab will take care of updates required to keep plugins functional for newer versions of meshlab.
 For bugs and malfunctions of a specific plugin, please refer to the developer that released the plugin.
 You can open an issue on this repository, but please tag the developer of the plugin that present the issue.
+You can find the author information in the `author.txt` file contained in each one of the plugin directories.
 
 # License
 
