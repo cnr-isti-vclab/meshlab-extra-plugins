@@ -222,7 +222,7 @@ RichParameterList VirtualGoniometerFilterPlugin::initParameterList(const QAction
             z = m.cm.vert[i].P()[2];
          }
 
-         parlst.addParam(RichPoint3f("Location", Point3f(x,y,z), "Location", "Location on mesh to run Virtual Goniometer."));
+         parlst.addParam(RichPosition("Location", Point3f(x,y,z), "Location", "Location on mesh to run Virtual Goniometer."));
          parlst.addParam(RichFloat("Radius", 3.0, "Radius", "Radius of patch to use."));
          parlst.addParam(RichDynamicFloat("SegParam",SegParam,0.0,5.0,"Segmentation Parameter", "Parameter controlling how much influence the geometry has in segmentation."));
          parlst.addParam(RichSaveFile("SaveFile", out_file, "*.csv", "Save File", "File to save angle measurements."));
