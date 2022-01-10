@@ -45,6 +45,7 @@ set(CMAKE_INSTALL_RPATH)
 set (MESHLAB_PLUGINS
 	plugins/filter_csg
 	plugins/filter_globalregistration
+	plugins/filter_orientedbbox
 	plugins/filter_poisson
 	plugins/filter_virtualgoniometer
 )
