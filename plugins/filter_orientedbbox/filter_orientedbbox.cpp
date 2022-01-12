@@ -201,7 +201,7 @@ void FilterOrientedbboxPlugin::calcOrientedbbox(
 	bool result = vcg::tri::ConvexHull<CMeshO, CMeshO>::ComputeConvexHull(
 		mm.cm, convexm.cm);
 	convexm.clearDataMask(MeshModel::MM_FACEFACETOPO);
-	convexm.UpdateBoxAndNormals();
+	convexm.updateBoxAndNormals();
 	if (!result)
 		throw MLException("Failed computing convex hull.");
 
@@ -250,7 +250,7 @@ void FilterOrientedbboxPlugin::calcOrientedbbox(
 			bboxm.cm.face[fc_i].V(i) = &bboxm.cm.vert[vertIdx[fc_i][i]];
 	}
 
-	bboxm.UpdateBoxAndNormals();
+	bboxm.updateBoxAndNormals();
 }
 
 MESHLAB_PLUGIN_NAME_EXPORTER(FilterSamplePlugin)
