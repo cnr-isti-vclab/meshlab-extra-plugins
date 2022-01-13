@@ -76,7 +76,11 @@ QString FilterOrientedbboxPlugin::filterInfo(ActionIDType filterId) const
 {
 	switch(filterId) {
 	case FP_CALC_ORIENTEDBBOX :
-		return "Calculate oriented bounding box using the HYBBRID method.";
+        return "Calculate oriented bounding box of a mesh using the HYBBRID method. The "
+               "algorithm this filter implements is based on the paper: <br>"
+               "<i>Chang, C. T., Gorissen, B., & Melchior, S.</i><br>"
+               "<b>Fast oriented bounding box optimization on the rotation group SO(3,R)</b><br>"
+               "ACM Transactions on Graphics (TOG), 30(5), 1-16.";
 	default :
 		assert(0);
 		return "Unknown Filter";
