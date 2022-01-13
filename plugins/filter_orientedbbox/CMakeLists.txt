@@ -13,13 +13,17 @@
 # You should have received a copy of the GNU General Public License
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 
-option(BUILD_TESTS "Set me to enable building test_hybbrid binary")
+option(BUILD_TESTS "Set me to enable building test_hybbrid binary" OFF)
 
 set(SOURCES filter_orientedbbox.cpp genetic.cpp quick_hull.cpp rotating_calipers.cpp)
 
 set(HEADERS filter_orientedbbox.h genetic.h quick_hull.h rotating_calipers.h)
 
 add_meshlab_plugin(filter_orientedbbox ${SOURCES} ${HEADERS})
+
+if(MSVC)
+  target_compile_definitions(filter_orientedbbox PRIVATE _USE_MATH_DEFINES)
+endif()
 
 if(BUILD_TESTS)
   add_executable(test_hybbrid test_hybbrid.cpp genetic.cpp)

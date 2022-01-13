@@ -41,6 +41,9 @@ public:
 
 	// Encodes a rotation matrix and the associated volume for our vertices
 	struct RotVolPair {
+		RotVolPair() = default;
+		RotVolPair(float vol) : vol(vol) {}
+		RotVolPair(const Eigen::Matrix3f& om, float vol) : om(om), vol(vol) {}
 		// Orthogonal matrix
 		Eigen::Matrix3f om;
 		// Volume of minbb when using the rotation matrix

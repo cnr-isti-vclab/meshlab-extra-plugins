@@ -26,6 +26,8 @@
 // Angle and resulting area for the set of 2d vertices passed to the
 // rotatingCalipers function.
 struct RotAreaPair {
+	RotAreaPair() = default;
+	RotAreaPair(float angle, float area) : angle(angle), area(area) {}
 	float angle;
 	float area;
 };

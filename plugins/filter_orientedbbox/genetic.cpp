@@ -70,7 +70,7 @@ GeneticAlgorithm::run(CallBackIter cb, void *cbData, int numIter) const
 		pop[i] = sx;
 	}
 
-	RotVolPair oldBest, bestRv{ .om = {}, .vol = INFINITY };
+	RotVolPair oldBest, bestRv(INFINITY);
 	int iterNoProgress = 0;
 	// Main loop
 	for (int it_i = 0; it_i < numIter; ++it_i) {
@@ -98,7 +98,7 @@ GeneticAlgorithm::run(CallBackIter cb, void *cbData, int numIter) const
 			iterNoProgress = 0;
 		}
 
-                // Get next generation
+		// Get next generation
 		vector<Simplex> nextPop;
 		nelderMeadBreed(pop, nextPop);
 		pop = nextPop;
@@ -155,7 +155,7 @@ struct GeneticAlgorithm::RotVolPair GeneticAlgorithm::localOptimum(const Matrix3
 		break;
 	}
 
-        return RotVolPair{.om = projR*rot, .vol = volume};
+	return RotVolPair(projR*rot, volume);
 }
 
 float GeneticAlgorithm::Simplex::minVolume(void) const
@@ -184,14 +184,14 @@ void GeneticAlgorithm::nelderMeadBreed(const vector<Simplex> &currentPop,
 {
 	constexpr int numGroups = 4;
 	vector<int> idx[numGroups];
-	unsigned int seed = time(NULL);
+	srand(time(NULL));
 	float factor = (M_/2.f)*(float)RAND_MAX;
 	int h1 = M_/2, h2 = (M_ + 1)/2;
 
 	// Create the 4 groups (sets of random indexes)
 	for (int g_i = 0; g_i < numGroups; ++g_i) {
 		for (int i = 0; i < M_/2; ++i)
-			idx[g_i].push_back((int) floorf(rand_r(&seed)/factor));
+			idx[g_i].push_back((int) floorf(rand()/factor));
 	}
 
 	// Crossover first two
@@ -201,7 +201,7 @@ void GeneticAlgorithm::nelderMeadBreed(const vector<Simplex> &currentPop,
 		float cutoff = 0.5 + 0.1*(fit1 <= fit2) - 0.1*(fit1 >= fit2);
 		Simplex sx;
 		for (int om_i = 0; om_i < DIM + 1; ++om_i) {
-			if (rand_r(&seed) < cutoff)
+			if (rand() < cutoff)
 				sx.rv[om_i] = currentPop[idx[0][sx_i]].rv[om_i];
 			else
 				sx.rv[om_i] = currentPop[idx[1][sx_i]].rv[om_i];
@@ -269,7 +269,7 @@ void GeneticAlgorithm::getBBoxPoints(const Matrix3f &rot,
 	// 2,3: y min, y max
 	// 4,5: z min, z max
 	size_t idx[6];
-        for (int d = 0; d < DIM; ++d) {
+		for (int d = 0; d < DIM; ++d) {
 		getIdxMinMax(rotPts, d, idx[2*d], idx[2*d + 1]);
 		dim.push_back(rotPts[idx[2*d + 1]][d] - rotPts[idx[2*d]][d]);
 	}
@@ -297,7 +297,7 @@ Vector3f GeneticAlgorithm::getAxisBoxSize(const vector<Vector3f> &points) const
 {
 	Vector3f size;
 
-        for (int d = 0; d < DIM; ++d) {
+	for (int d = 0; d < DIM; ++d) {
 		size_t minIdx, maxIdx;
 		getIdxMinMax(points, d, minIdx, maxIdx);
 		size[d] = points[maxIdx][d] - points[minIdx][d];

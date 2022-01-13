@@ -143,5 +143,5 @@ RotAreaPair rotatingCalipers(const std::vector<Eigen::Vector2f> &vert)
 		};
 	}
 
-	return RotAreaPair{.angle = (float)minVolAng, .area = (float)vol};
+	return RotAreaPair(minVolAng, vol);
 }
