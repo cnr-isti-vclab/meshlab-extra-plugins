@@ -58,7 +58,7 @@ public:
 			vcg::CallBackPos *cb);
 
 private:
-	void calcOrientedbbox(
+	std::map<std::string, QVariant> calcOrientedbbox(
 			MeshDocument &md,
 			vcg::CallBackPos *cb,
 			const RichParameterList &par);

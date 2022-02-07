@@ -76,11 +76,11 @@ QString FilterOrientedbboxPlugin::filterInfo(ActionIDType filterId) const
 {
 	switch(filterId) {
 	case FP_CALC_ORIENTEDBBOX :
-        return "Calculate oriented bounding box of a mesh using the HYBBRID method. The "
-               "algorithm this filter implements is based on the paper: <br>"
-               "<i>Chang, C. T., Gorissen, B., & Melchior, S.</i><br>"
-               "<b>Fast oriented bounding box optimization on the rotation group SO(3,R)</b><br>"
-               "ACM Transactions on Graphics (TOG), 30(5), 1-16.";
+		return "Calculate minimal-volume oriented bounding box of a mesh using the HYBBRID method. "
+			   "The algorithm this filter implements is based on the paper: <br>"
+			   "<i>Chang, C. T., Gorissen, B., & Melchior, S.</i><br>"
+			   "<b>Fast oriented bounding box optimization on the rotation group SO(3,R)</b><br>"
+			   "ACM Transactions on Graphics (TOG), 30(5), 1-16.";
 	default :
 		assert(0);
 		return "Unknown Filter";
@@ -141,15 +141,35 @@ RichParameterList FilterOrientedbboxPlugin::initParameterList(const QAction *act
 	RichParameterList parlst;
 	switch(ID(action)) {
 	case FP_CALC_ORIENTEDBBOX:
-		parlst.addParam(RichInt("MaxIter",
-					100,
-					"Max iterations",
-					"Maximum number of iterations. Note that the "
-					"algorithm will finish before reaching these "
-					" iterations if no further progress is "
-					"happening. If the solution is not good enough"
-					" you could experiment with changing this"
-					" value.\n"));
+		parlst.addParam(RichInt(
+			"MaxIter",
+			100,
+			"Max iterations",
+			"Maximum number of iterations. Note that the "
+			"algorithm will finish before reaching these "
+			" iterations if no further progress is "
+			"happening. If the solution is not good enough"
+			" you could experiment with changing this"
+			" value.\n"));
+		parlst.addParam(RichBool(
+			"create_ch",
+			false,
+			"Create Convex Hull",
+			"If true, a new layer containing the convex hull of the input mesh is created."));
+		parlst.addParam(RichBool(
+			"create_bb_mesh",
+			true,
+			"Create BBox Mesh",
+			"If true, creates a mesh representing the minimal oriented bounding box."));
+		parlst.addParam(RichBool(
+			"set_transform",
+			false,
+			"Set Transform Matrix",
+			"Sets the the transform matrix inverse of the resulting bounding box to the input "
+			"mesh (and to the bounding box mesh and the convex hull, if their options are "
+			"enabled). Useful to re-orient the input mesh, having the minimal axis aligned "
+			"bounding box."));
+
 		break;
 	default:
 		assert(0);
@@ -174,8 +194,7 @@ std::map<std::string, QVariant> FilterOrientedbboxPlugin::applyFilter(
 {
 	switch(ID(action)) {
 	case FP_CALC_ORIENTEDBBOX:
-		calcOrientedbbox(md, cb, par);
-		break;
+		return calcOrientedbbox(md, cb, par);
 	default:
 		wrongActionCalled(action);
 	}
@@ -189,18 +208,20 @@ bool FilterOrientedbboxPlugin::callBackIter(void *cbData, int iter)
 	return filt->cbPos(100*filt->currentIt/filt->numIter, "Genetic algorithm loop");
 }
 
-void FilterOrientedbboxPlugin::calcOrientedbbox(
+std::map<std::string, QVariant> FilterOrientedbboxPlugin::calcOrientedbbox(
 		MeshDocument &md,
 		vcg::CallBackPos *cb,
 		const RichParameterList &par)
 {
 	CMeshO &m = md.mm()->cm;
 
+	std::map<std::string, QVariant> outputValues;
+
 	log("Calculating bounding box for %d vertices", m.vn);
 
 	// Use convex hull to minimize number of points
 	MeshModel &mm = *md.mm();
-	MeshModel &convexm = *md.addNewMesh("", "Convex Hull");
+	MeshModel convexm(-1, "", "Convex Hull");
 	convexm.updateDataMask(MeshModel::MM_FACEFACETOPO);
 	bool result = vcg::tri::ConvexHull<CMeshO, CMeshO>::ComputeConvexHull(
 		mm.cm, convexm.cm);
@@ -208,6 +229,13 @@ void FilterOrientedbboxPlugin::calcOrientedbbox(
 	convexm.updateBoxAndNormals();
 	if (!result)
 		throw MLException("Failed computing convex hull.");
+	MeshModel* ch = nullptr;
+	if (par.getBool("create_ch")) {
+		ch = md.addNewMesh(convexm.cm, "Convex Hull");
+		ch->updateDataMask(&mm);
+		ch->updateBoxAndNormals();
+
+	}
 
 	// Convert CMeshO to Eigen::Vector3f so we can use the vertex in the algorithm
 	std::vector<Eigen::Vector3f> vert;
@@ -228,6 +256,9 @@ void FilterOrientedbboxPlugin::calcOrientedbbox(
 	std::vector<float> dim;
 	ga.getBBoxPoints(rvp.om, bbox, dim);
 	log("Finished after %d iterations", currentIt);
+	Matrix33m rotM;
+	rotM.FromEigenMatrix(rvp.om);
+	outputValues["obb_rot_matrix"] = QVariant::fromValue(rotM);
 
 	log("Rotation matrix:");
 	log("%f\t%f\t%f", rvp.om(0), rvp.om(1), rvp.om(2));
@@ -236,25 +267,49 @@ void FilterOrientedbboxPlugin::calcOrientedbbox(
 	log("Box is %f x %f x %f", dim[0], dim[1], dim[2]);
 	log("Volume is %f", rvp.vol);
 
-	MeshModel &bboxm = *md.addNewMesh("", "Bounding box");
-	size_t num_vert_box = bbox.size();
-	static constexpr size_t num_cube_faces = 12;
-	tri::Allocator<CMeshO>::AddVertices(bboxm.cm, num_vert_box);
-	tri::Allocator<CMeshO>::AddFaces(bboxm.cm, num_cube_faces);
-	for (size_t i = 0; i < num_vert_box; ++i) {
-		for (size_t c = 0; c <3 ; ++c)
-			bboxm.cm.vert[i].P()[c] = bbox[i][c];
-	}
-	// 12 faces of the cube (must be triangles)
-	size_t vertIdx[num_cube_faces][3] = {
-		{0,2,1}, {1,2,3}, {2,4,3}, {3,4,5}, {4,6,5}, {5,6,7},
-		{4,2,6}, {6,2,0}, {6,0,7}, {7,0,1}, {7,1,5}, {5,1,3}};
-	for (size_t fc_i = 0; fc_i < num_cube_faces; ++fc_i) {
-		for (size_t i = 0; i < 3; ++i)
-			bboxm.cm.face[fc_i].V(i) = &bboxm.cm.vert[vertIdx[fc_i][i]];
+	MeshModel* bboxm = nullptr;
+	if (par.getBool("create_bb_mesh")) {
+		bboxm = md.addNewMesh("", "Bounding box");
+		size_t num_vert_box = bbox.size();
+		static constexpr size_t num_cube_faces = 12;
+		tri::Allocator<CMeshO>::AddVertices(bboxm->cm, num_vert_box);
+		tri::Allocator<CMeshO>::AddFaces(bboxm->cm, num_cube_faces);
+		for (size_t i = 0; i < num_vert_box; ++i) {
+			for (size_t c = 0; c <3 ; ++c)
+				bboxm->cm.vert[i].P()[c] = bbox[i][c];
+		}
+		// 12 faces of the cube (must be triangles)
+		size_t vertIdx[num_cube_faces][3] = {
+			{0,2,1}, {1,2,3}, {2,4,3}, {3,4,5}, {4,6,5}, {5,6,7},
+			{4,2,6}, {6,2,0}, {6,0,7}, {7,0,1}, {7,1,5}, {5,1,3}};
+		for (size_t fc_i = 0; fc_i < num_cube_faces; ++fc_i) {
+			for (size_t i = 0; i < 3; ++i)
+				bboxm->cm.face[fc_i].V(i) = &bboxm->cm.vert[vertIdx[fc_i][i]];
+		}
+
+		bboxm->updateBoxAndNormals();
 	}
 
-	bboxm.updateBoxAndNormals();
+	if (par.getBool("set_transform")) {
+		Eigen::Matrix3f inv = rvp.om.inverse();
+		rotM.FromEigenMatrix(inv);
+		mm.cm.Tr.SetColumn(0, rotM.GetColumn(0));
+		mm.cm.Tr.SetColumn(1, rotM.GetColumn(1));
+		mm.cm.Tr.SetColumn(2, rotM.GetColumn(2));
+
+		if (ch) {
+			ch->cm.Tr.SetColumn(0, rotM.GetColumn(0));
+			ch->cm.Tr.SetColumn(1, rotM.GetColumn(1));
+			ch->cm.Tr.SetColumn(2, rotM.GetColumn(2));
+		}
+		if (bboxm) {
+			bboxm->cm.Tr.SetColumn(0, rotM.GetColumn(0));
+			bboxm->cm.Tr.SetColumn(1, rotM.GetColumn(1));
+			bboxm->cm.Tr.SetColumn(2, rotM.GetColumn(2));
+		}
+	}
+
+	return outputValues;
 }
 
 MESHLAB_PLUGIN_NAME_EXPORTER(FilterSamplePlugin)
