@@ -28,6 +28,7 @@ DAMAGE.
 
 #ifndef GEOMETRY_INCLUDED
 #define GEOMETRY_INCLUDED
+#include <stdio.h>
 #include <math.h>
 #include <vector>
 #include <unordered_map>
