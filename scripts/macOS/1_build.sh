@@ -1,7 +1,7 @@
 #!/bin/bash
 
 #default paths wrt the script folder
-SCRIPTS_PATH="$(dirname "$(realpath "$0")")"
+SCRIPTS_PATH=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
 MESHLAB_SCRIPTS_PATH=$SCRIPTS_PATH/../../meshlab/scripts/macOS
 SOURCE_PATH=$SCRIPTS_PATH/../..
 

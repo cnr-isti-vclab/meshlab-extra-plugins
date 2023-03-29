@@ -4,7 +4,7 @@
 #
 # Run this script if you never installed any of the MeshLab dependencies.
 
-SCRIPTS_PATH="$(dirname "$(realpath "$0")")"
+SCRIPTS_PATH=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
 MESHLAB_SCRIPTS_PATH=$SCRIPTS_PATH/../../meshlab/scripts/macOS
 
 bash $MESHLAB_SCRIPTS_PATH/0_setup_env.sh $@
