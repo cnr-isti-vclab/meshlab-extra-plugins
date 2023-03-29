@@ -32,6 +32,7 @@ DAMAGE.
 #include <bits/types/FILE.h>
 #endif //__linux__
 #include <math.h>
+#include <stdio.h>
 #include <vector>
 #include <unordered_map>
 //#include "Hash.h"

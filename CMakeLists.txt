@@ -2,10 +2,11 @@
 # Copyright 2019, 2020, Visual Computing Lab, ISTI - Italian National Research Council
 # SPDX-License-Identifier: BSL-1.0
 
-cmake_minimum_required(VERSION 3.10)
+cmake_minimum_required(VERSION 3.18)
 project(MeshLabExtraPlugins)
 
-set (MESHLAB_SRC_DIR ${CMAKE_CURRENT_SOURCE_DIR}/meshlab/src)
+set (MESHLAB_DIR ${CMAKE_CURRENT_SOURCE_DIR}/meshlab)
+set (MESHLAB_SRC_DIR ${MESHLAB_DIR}/src)
 include(${MESHLAB_SRC_DIR}/cmake/meshlab_global_settings.cmake)
 
 ### Build options
@@ -28,10 +29,11 @@ find_package(Eigen3)
 
 ### Enter subdirectories
 set (MESHLAB_PLUGINS "") #no meshlab plugins needed
-set (BUILD_ONLY_MESHLAB_LIBRARIES ON)
-set (ALLOW_OPTIONAL_EXTERNAL_MESHLAB_LIBRARIES OFF)
-set(CMAKE_POLICY_DEFAULT_CMP0077 NEW)
-add_subdirectory(${MESHLAB_SRC_DIR})
+set (MESHLAB_USE_DEFAULT_BUILD_AND_INSTALL_DIRS ON)
+set (MESHLAB_BUILD_ONLY_LIBRARIES ON)
+set (MESHLAB_ALLOW_OPTIONAL_EXTERNAL_LIBRARIES OFF)
+add_subdirectory(${MESHLAB_DIR})
+set (MESHLAB_PLUGIN_INSTALL_DIR ${CMAKE_INSTALL_PREFIX}/meshlab/plugins)
 message(STATUS "Plugins output dir: " ${MESHLAB_PLUGIN_OUTPUT_DIR})
 
 
