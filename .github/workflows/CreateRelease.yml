@@ -9,290 +9,138 @@ on:
         required: true
         default: 'YYYY.MM'
 
+env:
+  QT_VERSION: 5.15.2
+  MAC_CERT: ${{secrets.MACOS_CERT_ID}}
+  WIN_CERT: ${{secrets.WIN_CERTIFICATE}}
+
 jobs:
-  linux_build:
-    name: Build MeshLab Extra Plugins (Linux)
-    runs-on: ubuntu-18.04 #in order to deploy, need to use oldest supported version
+  meshlab_plugins_build:
+    name: Build MeshLab Extra Plugins
+    runs-on: ${{ matrix.os }}
     strategy:
       matrix:
+        os: ['ubuntu-18.04', 'macos-latest', 'windows-latest']
         precision: [single_precision, double_precision]
-
     steps:
-    - uses: actions/checkout@v2
-      with:
-        submodules: recursive
-    - name: Install Qt
-      uses: jurplel/install-qt-action@v2
-    - name: Install dependencies
-      run: |
-       sudo apt-get install -y mesa-common-dev libglu1-mesa-dev libgmp-dev
-       #needed by qt 5.15 on linux
-       #sudo apt-get install libxcb-icccm4-dev libxcb-image0-dev libxcb-keysyms1-dev libxcb-render-util0-dev libxcb-xinerama0-dev
-    - name: Setup env variables
-      id: envs
-      shell: bash
-      run: |
-        if [ "${{matrix.precision}}" == "double_precision" ]; then
-          echo  ::set-output name=doption::"-DBUILD_WITH_DOUBLE_SCALAR=ON"
-          echo  ::set-output name=artifact_suffix::"_double"
-        else
-          echo  ::set-output name=doption::""
-          echo  ::set-output name=artifact_suffix::""
-        fi
-    - name: Configure and Build
-      run: |
-        mkdir build
-        cd build
-        cmake -DCMAKE_BUILD_TYPE=MinSizeRel -DCMAKE_INSTALL_PREFIX=$INSTALL_PATH ${{steps.envs.outputs.doption}} ..
-        make -j4
-    - name: Upload MeshLab Extra Plugins
-      uses: actions/upload-artifact@v2
-      with:
-        name: meshlab_linux_extra_plugins${{steps.envs.outputs.artifact_suffix}}
-        path: build/meshlab/src/distrib/plugins
-
-  macos_build:
-    name: Build MeshLab Extra Plugins (MacOS)
-    runs-on: macos-latest
-    strategy:
-      matrix:
-        precision: [single_precision, double_precision]
-
-    steps:
-    - uses: actions/checkout@v2
-      with:
-        submodules: recursive
-    - name: Install Qt
-      uses: jurplel/install-qt-action@v2
-    - name: Install dependencies
-      run: |
-        brew install libomp
-    - name: Setup env variables
-      id: envs
-      shell: bash
-      run: |
-        if [ "${{matrix.precision}}" == "double_precision" ]; then
-          echo  ::set-output name=doption::"-DBUILD_WITH_DOUBLE_SCALAR=ON"
-          echo  ::set-output name=artifact_suffix::"_double"
-        else
-          echo  ::set-output name=doption::""
-          echo  ::set-output name=artifact_suffix::""
-        fi
-    - name: Configure and Build
-      run: |
-        mkdir build
-        cd build
-        cmake -DCMAKE_BUILD_TYPE=MinSizeRel -DCMAKE_INSTALL_PREFIX=$INSTALL_PATH ${{steps.envs.outputs.doption}} ..
-        make -j4
-    - name: Import Cert and Key
-      uses: apple-actions/import-codesign-certs@v1
-      with:
-        p12-file-base64: ${{ secrets.MACOS_CERTIFICATE }}
-        p12-password: ${{ secrets.MACOS_CERTIFICATE_PWD }}
-    - name: Sign Plugins
-      run: |
-        for plugin in build/meshlab/src/distrib/plugins/*.so
-        do
-            codesign --options "runtime" --timestamp --force --deep --sign ${{ secrets.MACOS_CERT_ID }} $plugin
-        done
-    - name: Upload MeshLab Extra Plugins
-      uses: actions/upload-artifact@v2
-      with:
-        name: meshlab_macos_extra_plugins${{steps.envs.outputs.artifact_suffix}}
-        path: build/meshlab/src/distrib/plugins
-
-  windows_build:
-    name: Build MeshLab Extra Plugins (Windows)
-    runs-on: windows-latest
-    strategy:
-      matrix:
-        precision: [single_precision, double_precision]
-
-    steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
       with:
         submodules: recursive
     - name: Setup MSVC
       uses: ilammy/msvc-dev-cmd@v1
+    - name: Set CodeSign Certificate macOS
+      if: runner.os == 'macOS' && env.MAC_CERT != null
+      uses: apple-actions/import-codesign-certs@v2
+      with:
+        p12-file-base64: ${{ secrets.MACOS_CERTIFICATE }}
+        p12-password: ${{ secrets.MACOS_CERTIFICATE_PSSW }}
+    - name: Set CodeSign Certificate Windows
+      if: runner.os == 'Windows' && env.WIN_CERT != null
+      run: |
+        New-Item -ItemType directory -Path certificate
+        Set-Content -Path certificate\certificate.txt -Value '${{ secrets.WIN_CERTIFICATE }}'
+        certutil -decode certificate\certificate.txt certificate\certificate.pfx
     - name: Install Qt
-      uses: jurplel/install-qt-action@v2
+      uses: jurplel/install-qt-action@v3
+      with:
+        cache: true
+        version: ${{ env.QT_VERSION }}
+    - name: Install dependencies
+      shell: bash
+      run: |
+        bash scripts/${{ runner.os }}/0_setup_env.sh --dont_install_qt --dont_install_cgal_and_boost
     - name: Setup env variables
       id: envs
       shell: bash
       run: |
         if [ "${{matrix.precision}}" == "double_precision" ]; then
-          echo  ::set-output name=doption::"-DBUILD_WITH_DOUBLE_SCALAR=ON"
-          echo  ::set-output name=artifact_suffix::"_double"
+          echo "artifact_suffix=_double" >> $GITHUB_OUTPUT
         else
-          echo  ::set-output name=doption::""
-          echo  ::set-output name=artifact_suffix::""
+          echo "artifact_suffix=" >> $GITHUB_OUTPUT
         fi
-    - name: Set Certificate
-      run: |
-        New-Item -ItemType directory -Path meshlab\certificate
-        Set-Content -Path meshlab\certificate\certificate.txt -Value '${{ secrets.WIN_CERTIFICATE }}'
-        certutil -decode meshlab\certificate\certificate.txt meshlab\certificate\certificate.pfx
     - name: Configure and Build
       shell: bash
       run: |
-        mkdir build
-        cd build
-        cmake -GNinja -DCMAKE_BUILD_TYPE=MinSizeRel -DCMAKE_INSTALL_PREFIX=$INSTALL_PATH ${{steps.envs.outputs.doption}} ..
-        ninja
-    - name: Sign Plugins
-      run: |
-        .\meshlab\scripts\Windows\resources\windows_sign_dlls.ps1 -pssw '${{ secrets.WIN_CERTIFICATE_PWD }}' -path 'build\meshlab\src\distrib\plugins'
+        bash scripts/${{ runner.os }}/1_build.sh --${{ matrix.precision }}
     - name: Upload MeshLab Extra Plugins
-      uses: actions/upload-artifact@v2
+      uses: actions/upload-artifact@v3
       with:
-        name: meshlab_windows_extra_plugins${{steps.envs.outputs.artifact_suffix}}
-        path: build/meshlab/src/distrib/plugins
+        name: MeshLab_${{ runner.os }}_extra_plugins${{steps.envs.outputs.artifact_suffix}}
+        path: install/meshlab/plugins
+
 
   #after building MeshLab for the three platforms, we create a release in github
   create_release:
     name: Create Release
-    needs: [linux_build, macos_build, windows_build]
+    needs: [meshlab_plugins_build]
     runs-on: ubuntu-latest
     steps:
 
-    - name: Setup env variables
-      id: envs
-      shell: bash
-      run: |
-        if [ "${{ github.event.inputs.release_candidate }}" == "true" ]; then
-          echo  ::set-output name=rc_suffix::"_rc"
-        else
-          echo ::set-output name=rc_suffix::""
-        fi
-
     #Download Linux Packages
     - name: Download Linux ZIP
-      uses: actions/download-artifact@v2
+      uses: actions/download-artifact@v3
       with:
-        name: meshlab_linux_extra_plugins
-        path: meshlab_linux_extra_plugins
+        name: MeshLab_Linux_extra_plugins
+        path: MeshLab_Linux_extra_plugins
     - name: Download Linux ZIP double
-      uses: actions/download-artifact@v2
+      uses: actions/download-artifact@v3
       with:
-        name: meshlab_linux_extra_plugins_double
-        path: meshlab_linux_extra_plugins_double
+        name: MeshLab_Linux_extra_plugins_double
+        path: MeshLab_Linux_extra_plugins_double
     - name: Create Linux Archive
       run: |
-        mv meshlab_linux_extra_plugins MeshLab-Extra-Plugins-${{ github.event.inputs.version }}-linux
+        mv MeshLab_Linux_extra_plugins MeshLab-Extra-Plugins-${{ github.event.inputs.version }}-linux
         tar -cvzf MeshLab-Extra-Plugins-${{ github.event.inputs.version }}-linux.tar.gz MeshLab-Extra-Plugins-${{ github.event.inputs.version }}-linux/
-        mv meshlab_linux_extra_plugins_double MeshLab-Extra-Plugins-${{ github.event.inputs.version }}d-linux
+        mv MeshLab_Linux_extra_plugins_double MeshLab-Extra-Plugins-${{ github.event.inputs.version }}d-linux
         tar -cvzf MeshLab-Extra-Plugins-${{ github.event.inputs.version }}d-linux.tar.gz MeshLab-Extra-Plugins-${{ github.event.inputs.version }}d-linux/
 
     #Download MacOS Packages
     - name: Download MacOS ZIP
-      uses: actions/download-artifact@v2
+      uses: actions/download-artifact@v3
       with:
-        name: meshlab_macos_extra_plugins
-        path: meshlab_macos_extra_plugins
+        name: MeshLab_macOS_extra_plugins
+        path: MeshLab_macOS_extra_plugins
     - name: Download MacOS ZIP double
-      uses: actions/download-artifact@v2
+      uses: actions/download-artifact@v3
       with:
-        name: meshlab_macos_extra_plugins_double
-        path: meshlab_macos_extra_plugins_double
+        name: MeshLab_macOS_extra_plugins_double
+        path: MeshLab_macOS_extra_plugins_double
     - name: Create MacOS Archive
       run: |
-        mv meshlab_macos_extra_plugins MeshLab-Extra-Plugins-${{ github.event.inputs.version }}-macos
+        mv MeshLab_macOS_extra_plugins MeshLab-Extra-Plugins-${{ github.event.inputs.version }}-macos
         zip -r MeshLab-Extra-Plugins-${{ github.event.inputs.version }}-macos.zip MeshLab-Extra-Plugins-${{ github.event.inputs.version }}-macos/
-        mv meshlab_macos_extra_plugins_double MeshLab-Extra-Plugins-${{ github.event.inputs.version }}d-macos
+        mv MeshLab_macOS_extra_plugins_double MeshLab-Extra-Plugins-${{ github.event.inputs.version }}d-macos
         zip -r MeshLab-Extra-Plugins-${{ github.event.inputs.version }}d-macos.zip MeshLab-Extra-Plugins-${{ github.event.inputs.version }}d-macos/
 
     #Download MacOS Packages
     - name: Download Windows ZIP
-      uses: actions/download-artifact@v2
+      uses: actions/download-artifact@v3
       with:
-        name: meshlab_windows_extra_plugins
-        path: meshlab_windows_extra_plugins
+        name: MeshLab_Windows_extra_plugins
+        path: MeshLab_Windows_extra_plugins
     - name: Download Windows ZIP double
-      uses: actions/download-artifact@v2
+      uses: actions/download-artifact@v3
       with:
-        name: meshlab_windows_extra_plugins_double
-        path: meshlab_windows_extra_plugins_double
+        name: MeshLab_Windows_extra_plugins_double
+        path: MeshLab_Windows_extra_plugins_double
     - name: Create MacOS Archive
       run: |
-        mv meshlab_windows_extra_plugins MeshLab-Extra-Plugins-${{ github.event.inputs.version }}-windows
+        mv MeshLab_Windows_extra_plugins MeshLab-Extra-Plugins-${{ github.event.inputs.version }}-windows
         zip -r MeshLab-Extra-Plugins-${{ github.event.inputs.version }}-windows.zip MeshLab-Extra-Plugins-${{ github.event.inputs.version }}-windows/
-        mv meshlab_windows_extra_plugins_double MeshLab-Extra-Plugins-${{ github.event.inputs.version }}d-windows
+        mv MeshLab_Windows_extra_plugins_double MeshLab-Extra-Plugins-${{ github.event.inputs.version }}d-windows
         zip -r MeshLab-Extra-Plugins-${{ github.event.inputs.version }}d-windows.zip MeshLab-Extra-Plugins-${{ github.event.inputs.version }}d-windows/
 
     #Create release and upload
-    - name: Publish Release
-      id: create_release
-      uses: actions/create-release@v1.0.0
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    - uses: "marvinpinto/action-automatic-releases@latest"
       with:
-        tag_name: Meshlab-Extra-Plugins-${{ github.event.inputs.version }}
-        release_name: Meshlab-Extra-Plugins-${{ github.event.inputs.version }}
-        draft: false
+        repo_token: "${{ secrets.GITHUB_TOKEN }}"
+        automatic_release_tag: "Meshlab-Extra-Plugins-${{ github.event.inputs.version }}"
         prerelease: false
-
-    #Linux
-    - name: Upload Linux Archive
-      id: upload-release-linux-portable
-      uses: actions/upload-release-asset@v1
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      with:
-        upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: MeshLab-Extra-Plugins-${{ github.event.inputs.version }}-linux.tar.gz
-        asset_name: MeshLab-Extra-Plugins-${{ github.event.inputs.version }}-linux.tar.gz
-        asset_content_type: MeshLab Extra Plugins for Linux
-    - name: Upload Linux Archive double
-      id: upload-release-linux-portable-d
-      uses: actions/upload-release-asset@v1
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      with:
-        upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: MeshLab-Extra-Plugins-${{ github.event.inputs.version }}d-linux.tar.gz
-        asset_name: MeshLab-Extra-Plugins-${{ github.event.inputs.version }}d-linux.tar.gz
-        asset_content_type: MeshLab Extra Plugins for Linux
-
-    #MacOS
-    - name: Upload MacOS Archive
-      id: upload-macos
-      uses: actions/upload-release-asset@v1
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      with:
-        upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: MeshLab-Extra-Plugins-${{ github.event.inputs.version }}-macos.zip
-        asset_name: MeshLab-Extra-Plugins-${{ github.event.inputs.version }}-macos.zip
-        asset_content_type: MeshLab Extra Plugins for MacOS
-    - name: Upload MacOS Archive double
-      id: upload-macos-d
-      uses: actions/upload-release-asset@v1
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      with:
-        upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: MeshLab-Extra-Plugins-${{ github.event.inputs.version }}d-macos.zip
-        asset_name: MeshLab-Extra-Plugins-${{ github.event.inputs.version }}d-macos.zip
-        asset_content_type: MeshLab Extra Plugins for MacOS
-
-    #Windows
-    - name: Upload Windows Archive
-      id: upload-windows
-      uses: actions/upload-release-asset@v1
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      with:
-        upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: MeshLab-Extra-Plugins-${{ github.event.inputs.version }}-windows.zip
-        asset_name: MeshLab-Extra-Plugins-${{ github.event.inputs.version }}-windows.zip
-        asset_content_type: MeshLab Extra Plugins for Windows
-    - name: Upload Windows Archive double
-      id: upload-windows-d
-      uses: actions/upload-release-asset@v1
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      with:
-        upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: MeshLab-Extra-Plugins-${{ github.event.inputs.version }}d-windows.zip
-        asset_name: MeshLab-Extra-Plugins-${{ github.event.inputs.version }}d-windows.zip
-        asset_content_type: MeshLab Extra Plugins for Windows
+        title: "Meshlab-Extra-Plugins-${{ github.event.inputs.version }}"
+        files: |
+          MeshLab-Extra-Plugins-${{ github.event.inputs.version }}-linux.tar.gz
+          MeshLab-Extra-Plugins-${{ github.event.inputs.version }}d-linux.tar.gz
+          MeshLab-Extra-Plugins-${{ github.event.inputs.version }}-macos.zip
+          MeshLab-Extra-Plugins-${{ github.event.inputs.version }}d-macos.zip
+          MeshLab-Extra-Plugins-${{ github.event.inputs.version }}-windows.zip
+          MeshLab-Extra-Plugins-${{ github.event.inputs.version }}d-windows.zip

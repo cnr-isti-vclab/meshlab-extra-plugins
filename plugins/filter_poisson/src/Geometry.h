@@ -33,6 +33,7 @@ DAMAGE.
 #endif //__linux__
 #include <stdio.h>
 #include <math.h>
+#include <stdio.h>
 #include <vector>
 #include <unordered_map>
 //#include "Hash.h"
