@@ -62,7 +62,7 @@ jobs:
       run: |
         bash scripts/${{ runner.os }}/1_build.sh --${{ matrix.precision }} --nightly --ccache
     - name: Upload MeshLab Extra Plugins
-      uses: actions/upload-artifact@v
+      uses: actions/upload-artifact@v3
       with:
         name: MeshLab_${{ runner.os }}_extra_plugins${{steps.envs.outputs.artifact_suffix}}
         path: install/meshlab/plugins
