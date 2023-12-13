@@ -31,6 +31,7 @@ DAMAGE.
 #ifdef __linux__
 #include <bits/types/FILE.h>
 #endif //__linux__
+#include <stdio.h>
 #include <math.h>
 #include <stdio.h>
 #include <vector>

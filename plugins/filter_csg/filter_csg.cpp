@@ -95,7 +95,7 @@ RichParameterList FilterCSG::initParameterList(const QAction *action, const Mesh
 								 "The first operand of the CSG operation"));
 		parlst.addParam(RichMesh("SecondMesh", target->id(), &md, "Second Mesh",
 								 "The second operand of the CSG operation"));
-		parlst.addParam(RichAbsPerc("Delta", mindim / 100.0, 0, mindim,
+		parlst.addParam(RichPercentage("Delta", mindim / 100.0, 0, mindim,
 									"Spacing between sampling lines",
 									"This parameter controls the accuracy of the result and the speed of the computation."
                                             "The time and memory needed to perform the operation usually scale as the reciprocal square of this value."

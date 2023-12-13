@@ -225,7 +225,7 @@ RichParameterList VirtualGoniometerFilterPlugin::initParameterList(const QAction
          parlst.addParam(RichPosition("Location", Point3f(x,y,z), "Location", "Location on mesh to run Virtual Goniometer."));
          parlst.addParam(RichFloat("Radius", 3.0, "Radius", "Radius of patch to use."));
          parlst.addParam(RichDynamicFloat("SegParam",SegParam,0.0,5.0,"Segmentation Parameter", "Parameter controlling how much influence the geometry has in segmentation."));
-         parlst.addParam(RichSaveFile("SaveFile", out_file, "*.csv", "Save File", "File to save angle measurements."));
+         parlst.addParam(RichFileSave("SaveFile", out_file, "*.csv", "Save File", "File to save angle measurements."));
          parlst.addParam(RichBool("Automatic Radius", FALSE,"Burst measurements", "Use automatic radius selection and take multiple measurements."));
          parlst.addParam(RichBool("UpdateParam", FALSE, "Update Seg Parameter", "Only update the segmentation parameter (does not run the virtual goniometer)."));
          parlst.addParam(RichBool("UpdateSave", FALSE, "Update Save File", "Only update the Save File name (does not run the virtual goniometer)."));
