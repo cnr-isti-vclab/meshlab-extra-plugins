@@ -20,7 +20,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: ['ubuntu-18.04', 'macos-latest', 'windows-latest']
+        os: ['ubuntu-20.04', 'macos-latest', 'windows-latest']
         precision: [single_precision, double_precision]
     steps:
     - uses: actions/checkout@v3
@@ -131,13 +131,13 @@ jobs:
         zip -r MeshLab-Extra-Plugins-${{ github.event.inputs.version }}d-windows.zip MeshLab-Extra-Plugins-${{ github.event.inputs.version }}d-windows/
 
     #Create release and upload
-    - uses: "marvinpinto/action-automatic-releases@latest"
+    - uses: "ncipollo/release-action@v1"
       with:
-        repo_token: "${{ secrets.GITHUB_TOKEN }}"
-        automatic_release_tag: "Meshlab-Extra-Plugins-${{ github.event.inputs.version }}"
+        token: "${{ secrets.GITHUB_TOKEN }}"
+        tag: "Meshlab-Extra-Plugins-${{ github.event.inputs.version }}"
         prerelease: false
-        title: "Meshlab-Extra-Plugins-${{ github.event.inputs.version }}"
-        files: |
+        name: "Meshlab-Extra-Plugins-${{ github.event.inputs.version }}"
+        artifacts: |
           MeshLab-Extra-Plugins-${{ github.event.inputs.version }}-linux.tar.gz
           MeshLab-Extra-Plugins-${{ github.event.inputs.version }}d-linux.tar.gz
           MeshLab-Extra-Plugins-${{ github.event.inputs.version }}-macos.zip
