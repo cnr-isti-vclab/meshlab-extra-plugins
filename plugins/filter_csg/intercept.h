@@ -784,7 +784,7 @@ namespace vcg {
                               Point3dt(makeFraction(v2.X()*subCellPrecision, subCellPrecision),
                                        makeFraction(v2.Y()*subCellPrecision, subCellPrecision),
                                        makeFraction(v2.Z()*subCellPrecision, subCellPrecision)),
-                              i->cN().Normalize(),
+                              i->cN().normalized(),
                               i->cQ());
                 }
             }
